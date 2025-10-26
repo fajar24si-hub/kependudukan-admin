@@ -2,30 +2,53 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PendudukController;
 use App\Http\Controllers\KeluargaKKController;
+use App\Http\Controllers\WargaController;
 
-// Authentication Routes
-Route::get('/login', [AuthController::class, 'index'])->name('login'); // Ubah dari 'keluargakk,login' ke 'index'
-Route::post('/login', [AuthController::class, 'login']);
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-// Registration Routes
+// ========== AUTH ==========
+
+// Halaman Login
+Route::get('/login', [AuthController::class, 'index'])->name('login');
+
+// Proses Login
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+// Halaman Registrasi
 Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('signup');
-Route::post('/signup', [AuthController::class, 'register']);
 
-// Protected Routes - Add middleware auth
+// Proses Registrasi
+Route::post('/signup', [AuthController::class, 'register'])->name('signup.post');
+
+// Proses Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+// ========== PROTECTED (Hanya untuk yang sudah login) ==========
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
-        return view('index');
-    });
 
-    Route::get('/dashboard', function () {
-        return view('index');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/penduduk', [PendudukController::class, 'index']);
+    // CRUD Data Penduduk
+    Route::resource('penduduk', PendudukController::class);
 
+    // CRUD Data Keluarga KK
     Route::resource('keluargakk', KeluargaKKController::class);
+
+    // CRUD Data Warga
+    Route::resource('warga', WargaController::class);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ========== DEFAULT REDIRECT ==========
+Route::get('/', function () {
+    return redirect()->route('login');
+});

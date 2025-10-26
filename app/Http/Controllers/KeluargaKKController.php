@@ -10,7 +10,7 @@ class KeluargaKKController extends Controller
     public function index()
     {
         $data = KeluargaKK::all();
-        return view('keluargakk.keluargakk', compact('data'));
+        return view('keluargakk.index', compact('data'));
     }
 
     public function create()

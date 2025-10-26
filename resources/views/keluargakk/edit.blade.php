@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 @extends('index')
 
 @section('content')
@@ -104,4 +104,3 @@
     <script src="{{ asset('asset-admin/js/main.js') }}"></script>
 </body>
 
-</html>
