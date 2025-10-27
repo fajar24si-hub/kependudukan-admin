@@ -19,7 +19,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('login');
+        return view('pages.auth.login');
     }
 
     /**
@@ -53,7 +53,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('signup');
+        return view('pages.auth.signup');
     }
 
     /**

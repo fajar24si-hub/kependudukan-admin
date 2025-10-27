@@ -15,6 +15,6 @@ class DashboardController extends Controller
         $totalWarga = Warga::count();
         $totalUser = User::count();
 
-        return view('dashboard.index', compact('totalKeluarga', 'totalWarga', 'totalUser'));
+        return view('pages.dashboard.index', compact('totalKeluarga', 'totalWarga', 'totalUser'));
     }
 }

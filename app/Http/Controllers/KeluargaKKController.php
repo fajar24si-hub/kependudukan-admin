@@ -10,13 +10,13 @@ class KeluargaKKController extends Controller
     public function index()
     {
         $data = KeluargaKK::all();
-        return view('keluargakk.index', compact('data'));
+        return view('pages.keluargakk.index', compact('data'));
     }
 
     public function create()
     {
         // Ini sudah benar dan cocok dengan file create.blade.php
-        return view('keluargakk.create');
+        return view('pages.keluargakk.create');
     }
 
     public function store(Request $request)

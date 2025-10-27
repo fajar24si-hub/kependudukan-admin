@@ -27,6 +27,8 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('asset-admin/js/main.js') }}"></script>
+    
 </body>
 
 </html>
+
