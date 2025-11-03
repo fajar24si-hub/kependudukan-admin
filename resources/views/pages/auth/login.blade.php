@@ -26,71 +26,64 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('asset-admin/css/style.css') }}" rel="stylesheet">
+    <!-- Custom Login Stylesheet -->
+    <link href="{{ asset('asset-admin/css/login-custom.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container-fluid position-relative d-flex p-0">
 
-        <!-- Spinner -->
-        <div id="spinner"
-            class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
+    <div class="login-split-bg">
+        <!-- Left: Logo and branding -->
+        <div class="login-left">
+            <div class="login-logo">
+                <img src="{{ asset('asset-admin/img/logo.png') }}" alt="Logo" onerror="this.style.display='none'" />
+                <h2>KEPENDUDUKAN</h2>
+                <p>Data Akurat, Pelayanan Cepat</p>
             </div>
         </div>
-
-        <!-- Login Start -->
-        <div class="container-fluid">
-            <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-                    <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <a href="/" class="">
-                                <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>Kependudukan</h3>
-                            </a>
-                            <h3>Login</h3>
-                        </div>
-
-                        <!-- Alert Error -->
-                        @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                        @endif
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <!-- Login Form -->
-                        <form action="{{ route('login.post') }}" method="POST">
-                            @csrf
-                            <div class="form-floating mb-3">
-                                <input type="email" name="email" class="form-control" id="floatingInput"
-                                    placeholder="name@example.com" value="{{ old('email') }}" required>
-                                <label for="floatingInput">Email address</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" name="password" class="form-control" id="floatingPassword"
-                                    placeholder="Password" required>
-                                <label for="floatingPassword">Password</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Login</button>
-                        </form>
-
-                        <p class="text-center mb-0">
-                            Belum punya akun?
-                            <a href="{{ route('signup') }}">Sign Up</a>
-                        </p>
+        <!-- Right: Login form -->
+        <div class="login-right">
+            <div class="login-form-box">
+                <h3 class="text-center mb-4" style="color:#fff; font-weight:600;">Sign In</h3>
+                <!-- Alert Error -->
+                @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                </div>
+                @endif
+                <!-- Login Form -->
+                <form action="{{ route('login.post') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Your email</label>
+                        <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="{{ old('email') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="form-text" style="color:#b3c6e0; text-decoration:underline;">Recover password</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">SIGN IN</button>
+                </form>
+                <p class="text-center mb-0" style="color:#b3c6e0;">
+                    Belum punya akun?
+                    <a href="{{ route('signup') }}" style="color:#fff; text-decoration:underline;">Sign Up</a>
+                </p>
             </div>
         </div>
-        <!-- Login End -->
     </div>
 
     <!-- JavaScript Libraries -->

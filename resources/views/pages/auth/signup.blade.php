@@ -15,72 +15,59 @@
     <link href="{{ asset('asset-admin/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('asset-admin/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('asset-admin/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('asset-admin/css/login-custom.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container-fluid position-relative d-flex p-0">
 
-        <!-- Spinner -->
-        <div id="spinner"
-            class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
+    <div class="login-split-bg">
+        <!-- Left: Logo and branding -->
+        <div class="login-left">
+            <div class="login-logo">
+                <img src="{{ asset('asset-admin/img/logo.png') }}" alt="Logo" onerror="this.style.display='none'" />
+                <h2>KEPENDUDUKAN</h2>
+                <p>Data Akurat, Pelayanan Cepat</p>
             </div>
         </div>
-
-        <!-- Register Start -->
-        <div class="container-fluid">
-            <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-                    <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <a href="/" class="">
-                                <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>Kependudukan</h3>
-                            </a>
-                            <h3>Sign Up</h3>
-                        </div>
-
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <form action="{{ route('signup') }}" method="POST">
-                            @csrf
-                            <div class="form-floating mb-3">
-                                <input type="text" name="name" class="form-control" placeholder="Nama Lengkap" required>
-                                <label>Nama Lengkap</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="email" name="email" class="form-control" placeholder="Email" required>
-                                <label>Email address</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="password" name="password" class="form-control" placeholder="Password" required>
-                                <label>Password</label>
-                            </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" name="password_confirmation" class="form-control"
-                                    placeholder="Confirm Password" required>
-                                <label>Confirm Password</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign Up</button>
-                        </form>
-
-                        <p class="text-center mb-0">
-                            Sudah punya akun?
-                            <a href="{{ route('login') }}">Login</a>
-                        </p>
+        <!-- Right: Signup form -->
+        <div class="login-right">
+            <div class="login-form-box">
+                <h3 class="text-center mb-4" style="color:#fff; font-weight:600;">Sign Up</h3>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                </div>
+                @endif
+                <form action="{{ route('signup') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Lengkap</label>
+                        <input type="text" name="name" class="form-control" id="name" placeholder="Nama Lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" name="email" class="form-control" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password_confirmation" class="form-label">Confirm Password</label>
+                        <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
+                </form>
+                <p class="text-center mb-0" style="color:#b3c6e0;">
+                    Sudah punya akun?
+                    <a href="{{ route('login') }}" style="color:#fff; text-decoration:underline;">Login</a>
+                </p>
             </div>
         </div>
-        <!-- Register End -->
     </div>
 
     <!-- JavaScript -->
