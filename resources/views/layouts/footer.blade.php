@@ -12,8 +12,10 @@
         </div>
         <!-- Content End -->
 
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <!-- WhatsApp Chat Button -->
+        <a aria-label="Chat on WhatsApp" href="https://wa.me/85179797880" target="_blank" style="position: fixed; right: 30px; bottom: 30px; z-index: 99;">
+            <img alt="Chat on WhatsApp" src="{{ asset('asset-admin/img/whatsapp-logo.png') }}" style="width:60px; height:60px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.15);" />
+        </a>
     </div>
 
     <!-- JavaScript Libraries -->
@@ -27,7 +29,7 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('asset-admin/js/main.js') }}"></script>
-    
+
 </body>
 
 </html>
