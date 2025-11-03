@@ -22,12 +22,15 @@
                 class="nav-item nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
                 <i class="fa fa-tachometer-alt me-2"></i>Dashboard
             </a>
-            <a href="{{ url('/warga') }}" class="nav-item nav-link {{ request()->is('penduduk*') ? 'active' : '' }}">
-                <i class="fa fa-users me-2"></i>warga
-            </a>
             <a href="{{ url('/keluargakk') }}"
                 class="nav-item nav-link {{ request()->is('keluargakk*') ? 'active' : '' }}">
                 <i class="fa fa-home me-2"></i>Keluarga KK
+            </a>
+            <a href="{{ url('/warga') }}" class="nav-item nav-link {{ request()->is('penduduk*') ? 'active' : '' }}">
+                <i class="fa fa-users me-2"></i>Warga
+            </a>
+            <a href="{{route('user.index')}}" class="nav-item nav-link {{ request()->is('penduduk*') ? 'active' : '' }}">
+                <i class="fa fa-users me-2"></i>User
             </a>
         </div>
     </nav>

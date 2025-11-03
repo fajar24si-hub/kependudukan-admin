@@ -7,18 +7,26 @@ use Illuminate\Http\Request;
 
 class KeluargaKKController extends Controller
 {
+    /**
+     * Menampilkan semua data keluarga KK
+     */
     public function index()
     {
         $data = KeluargaKK::all();
         return view('pages.keluargakk.index', compact('data'));
     }
 
+    /**
+     * Menampilkan form tambah data keluarga KK
+     */
     public function create()
     {
-        // Ini sudah benar dan cocok dengan file create.blade.php
         return view('pages.keluargakk.create');
     }
 
+    /**
+     * Menyimpan data baru ke database
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -30,15 +38,23 @@ class KeluargaKKController extends Controller
         ]);
 
         KeluargaKK::create($validated);
-        return redirect()->route('keluargakk.index')->with('success', 'Data berhasil ditambahkan!');
+
+        return redirect()->route('keluargakk.index')
+            ->with('success', 'Data berhasil ditambahkan!');
     }
 
+    /**
+     * Menampilkan form edit data keluarga KK
+     */
     public function edit($id)
     {
         $keluarga = KeluargaKK::findOrFail($id);
-        return view('keluargakk.edit', compact('keluarga'));
+        return view('pages.keluargakk.edit', compact('keluarga'));
     }
 
+    /**
+     * Menyimpan perubahan data
+     */
     public function update(Request $request, $id)
     {
         $keluarga = KeluargaKK::findOrFail($id);
@@ -52,15 +68,26 @@ class KeluargaKKController extends Controller
         ]);
 
         $keluarga->update($validated);
-        return redirect()->route('keluargakk.index')->with('success', 'Data berhasil diperbarui!');
+
+        return redirect()->route('keluargakk.index')
+            ->with('success', 'Data berhasil diperbarui!');
     }
 
+    /**
+     * Menghapus data
+     */
     public function destroy($id)
     {
-        KeluargaKK::findOrFail($id)->delete();
-        return redirect()->route('keluargakk.index')->with('success', 'Data berhasil dihapus!');
+        $keluarga = KeluargaKK::findOrFail($id);
+        $keluarga->delete();
+
+        return redirect()->route('keluargakk.index')
+            ->with('success', 'Data berhasil dihapus!');
     }
 
+    /**
+     * Menampilkan data untuk dashboard (opsional)
+     */
     public function dashboard()
     {
         $total_kk = KeluargaKK::count();

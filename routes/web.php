@@ -16,6 +16,9 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('signup');
 Route::post('/signup', [AuthController::class, 'register'])->name('signup.post');
 
+// Halaman user
+Route::resource('user', UserController::class);
+
 // Proses Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
