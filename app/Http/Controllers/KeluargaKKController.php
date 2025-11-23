@@ -3,17 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Models\KeluargaKK;
+use App\Models\Warga;
 use Illuminate\Http\Request;
 
 class KeluargaKKController extends Controller
 {
     /**
-     * Menampilkan semua data keluarga KK
+     * Menampilkan semua data keluarga KK dengan pagination, search, dan filter
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = KeluargaKK::all();
-        return view('pages.keluargakk.index', compact('data'));
+        $query = KeluargaKK::with('kepalaKeluarga');
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kk_nomor', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhereHas('kepalaKeluarga', function($q) use ($search) {
+                      $q->where('nama', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by RT
+        if ($request->has('rt') && !empty($request->rt)) {
+            $query->where('rt', $request->rt);
+        }
+
+        // Filter by RW
+        if ($request->has('rw') && !empty($request->rw)) {
+            $query->where('rw', $request->rw);
+        }
+
+        // Sort functionality
+        $sort = $request->get('sort', 'kk_id');
+        $direction = $request->get('direction', 'desc');
+        $query->orderBy($sort, $direction);
+
+        // Pagination dengan 10 data per halaman
+        $data = $query->paginate(10)->withQueryString();
+
+        // Get unique values for filter dropdowns
+        $rtList = KeluargaKK::distinct()->whereNotNull('rt')->orderBy('rt')->pluck('rt');
+        $rwList = KeluargaKK::distinct()->whereNotNull('rw')->orderBy('rw')->pluck('rw');
+
+        return view('pages.keluargakk.index', compact('data', 'rtList', 'rwList'));
     }
 
     /**
@@ -21,7 +57,12 @@ class KeluargaKKController extends Controller
      */
     public function create()
     {
-        return view('pages.keluargakk.create');
+        // Get calon kepala keluarga (laki-laki, sudah menikah)
+        $calonKepalaKeluarga = Warga::where('jenis_kelamin', 'L')
+            ->where('status_perkawinan', 'Kawin')
+            ->get();
+
+        return view('pages.keluargakk.create', compact('calonKepalaKeluarga'));
     }
 
     /**
@@ -31,7 +72,7 @@ class KeluargaKKController extends Controller
     {
         $validated = $request->validate([
             'kk_nomor' => 'required|unique:keluarga_kk,kk_nomor',
-            'kepala_keluarga_warga_id' => 'required|numeric',
+            'kepala_keluarga_warga_id' => 'required|numeric|exists:warga,warga_id',
             'alamat' => 'required|string|max:255',
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
@@ -49,7 +90,11 @@ class KeluargaKKController extends Controller
     public function edit($id)
     {
         $keluarga = KeluargaKK::findOrFail($id);
-        return view('pages.keluargakk.edit', compact('keluarga'));
+        $calonKepalaKeluarga = Warga::where('jenis_kelamin', 'L')
+            ->where('status_perkawinan', 'Kawin')
+            ->get();
+
+        return view('pages.keluargakk.edit', compact('keluarga', 'calonKepalaKeluarga'));
     }
 
     /**
@@ -61,7 +106,7 @@ class KeluargaKKController extends Controller
 
         $validated = $request->validate([
             'kk_nomor' => 'required|unique:keluarga_kk,kk_nomor,' . $id . ',kk_id',
-            'kepala_keluarga_warga_id' => 'required|numeric',
+            'kepala_keluarga_warga_id' => 'required|numeric|exists:warga,warga_id',
             'alamat' => 'required|string|max:255',
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
