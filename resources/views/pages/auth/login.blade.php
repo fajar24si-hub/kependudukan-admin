@@ -1,102 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.auth-layout')
 
-<head>
-    <meta charset="utf-8">
-    <title>Login - Kependudukan</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+@section('title', 'Login - Kependudukan')
 
-    <!-- Favicon -->
-    <link href="{{ asset('asset-admin/img/favicon.ico') }}" rel="icon">
+@section('auth-header')
+    <h2>Selamat Datang Kembali</h2>
+    <p>Silakan masuk ke akun Anda untuk melanjutkan</p>
+@endsection
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
-        rel="stylesheet">
+@section('content')
+    <form class="auth-form" action="{{ route('login.post') }}" method="POST" id="loginForm">
+        @csrf
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{{ asset('asset-admin/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('asset-admin/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{{ asset('asset-admin/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
-    <link href="{{ asset('asset-admin/css/style.css') }}" rel="stylesheet">
-    <!-- Custom Login Stylesheet -->
-    <link href="{{ asset('asset-admin/css/login-custom.css') }}" rel="stylesheet">
-</head>
-
-<body>
-
-    <div class="login-split-bg">
-        <!-- Left: Logo and branding -->
-        <div class="login-left">
-            <div class="login-logo">
-                <img src="{{ asset('asset-admin/img/logo.png') }}" alt="Logo" onerror="this.style.display='none'" />
-                <h2>KEPENDUDUKAN</h2>
-                <p>Data Akurat, Pelayanan Cepat</p>
+        <div class="form-group">
+            <label for="email">Alamat Email</label>
+            <div class="input-with-icon">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email"
+                       class="form-control @error('email') is-invalid @enderror"
+                       id="email"
+                       name="email"
+                       placeholder="nama@contoh.com"
+                       value="{{ old('email') }}"
+                       required>
             </div>
         </div>
-        <!-- Right: Login form -->
-        <div class="login-right">
-            <div class="login-form-box">
-                <h3 class="text-center mb-4" style="color:#fff; font-weight:600;">Sign In</h3>
-                <!-- Alert Error -->
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <!-- Login Form -->
-                <form action="{{ route('login.post') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Your email</label>
-                        <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="{{ old('email') }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                            <label class="form-check-label" for="remember">Remember me</label>
-                        </div>
-                        <a href="#" class="form-text" style="color:#b3c6e0; text-decoration:underline;">Recover password</a>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 mb-3">SIGN IN</button>
-                </form>
-                <p class="text-center mb-0" style="color:#b3c6e0;">
-                    Belum punya akun?
-                    <a href="{{ route('signup') }}" style="color:#fff; text-decoration:underline;">Sign Up</a>
-                </p>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-with-icon">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password"
+                       class="form-control @error('password') is-invalid @enderror"
+                       id="password"
+                       name="password"
+                       placeholder="Masukkan password"
+                       required>
+                <button type="button" class="password-toggle">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
         </div>
+
+        <div class="form-check">
+            <input class="form-check-input"
+                   type="checkbox"
+                   name="remember"
+                   id="remember"
+                   {{ old('remember') ? 'checked' : '' }}>
+            <label class="form-check-label" for="remember">
+                Ingat saya di perangkat ini
+            </label>
+        </div>
+
+        <button type="submit" class="auth-btn">
+            <span class="spinner"></span>
+            <span>Masuk ke Sistem</span>
+            <i class="fas fa-sign-in-alt"></i>
+        </button>
+
+        @if(Route::has('password.request'))
+        <div class="text-center mt-3">
+            <a href="{{ route('password.request') }}" class="auth-link">
+                Lupa password?
+            </a>
+        </div>
+        @endif
+    </form>
+
+    @if(config('services.google.active') || config('services.facebook.active'))
+    <div class="divider">
+        <span>atau masuk dengan</span>
     </div>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('asset-admin/lib/easing/easing.min.js') }}"></script>
-    <script src="{{ asset('asset-admin/lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ asset('asset-admin/lib/owlcarousel/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('asset-admin/lib/tempusdominus/js/moment.min.js') }}"></script>
-    <script src="{{ asset('asset-admin/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+    <div class="social-login">
+        @if(config('services.google.active'))
+        <button type="button" class="social-btn google" onclick="window.location.href='{{ route('login.google') }}'">
+            <i class="fab fa-google"></i>
+            <span>Google</span>
+        </button>
+        @endif
 
-    <!-- Template Javascript -->
-    <script src="{{ asset('asset-admin/js/main.js') }}"></script>
-</body>
+        @if(config('services.facebook.active'))
+        <button type="button" class="social-btn facebook" onclick="window.location.href='{{ route('login.facebook') }}'">
+            <i class="fab fa-facebook-f"></i>
+            <span>Facebook</span>
+        </button>
+        @endif
+    </div>
+    @endif
+@endsection
 
-</html>
+@section('auth-links')
+    <p>Belum memiliki akun? <a href="{{ route('signup') }}" class="auth-link">Sign Up sekarang</a></p>
+@endsection
+
+@push('scripts')
+<script>
+    // Form validation
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+            e.preventDefault();
+            alert('Harap isi semua field yang diperlukan');
+        }
+    });
+</script>
+@endpush

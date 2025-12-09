@@ -5,24 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PeristiwaKematian extends Model
+class PeristiwaPindah extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'kematian_id';
+    protected $primaryKey = 'pindah_id';
     protected $fillable = [
         'warga_id',
-        'tgl_meninggal',
-        'sebab',
-        'lokasi',
+        'tgl_pindah',
+        'alamat_tujuan',
+        'alasan',
         'no_surat'
     ];
 
     // Relasi ke media
     public function media()
     {
-        return $this->hasMany(Media::class, 'ref_id', 'kematian_id')
-                    ->where('ref_table', 'peristiwa_kematian');
+        return $this->hasMany(Media::class, 'ref_id', 'pindah_id')
+                    ->where('ref_table', 'peristiwa_pindah');
     }
 
     public function getMediaFilesAttribute()

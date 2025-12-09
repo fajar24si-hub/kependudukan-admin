@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -12,12 +15,13 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        // Search functionality
+        // Search functionality - TAMBAHKAN ROLE PADA SEARCH
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('role', 'like', "%{$search}%"); // Tambahkan ini
             });
         }
 
@@ -30,7 +34,12 @@ class UserController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Sort functionality
+        // Filter by role jika ada
+        if ($request->has('role') && !empty($request->role)) {
+            $query->where('role', $request->role);
+        }
+
+        // Sort functionality - TAMBAHKAN SORT UNTUK ROLE
         $sort = $request->get('sort', 'created_at');
         $direction = $request->get('direction', 'desc');
         $query->orderBy($sort, $direction);
@@ -38,28 +47,65 @@ class UserController extends Controller
         // Pagination dengan 10 data per halaman
         $users = $query->paginate(10)->withQueryString();
 
-        return view('pages.user.index', compact('users'));
+        // Tambahkan daftar role untuk filter
+        $roles = ['Super Admin', 'Administrator', 'Pelanggan', 'Mitra'];
+
+        return view('pages.user.index', compact('users', 'roles'));
     }
 
     // Tambah user baru
     public function create()
     {
-        return view('pages.user.create');
+        $roles = ['Super Admin', 'Administrator', 'Pelanggan', 'Mitra'];
+        return view('pages.user.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        Log::info('Store user request received', ['data' => $request->except('password')]);
+
         $request->validate([
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:6|confirmed',
+            'role'     => 'required|in:Super Admin,Administrator,Pelanggan,Mitra', // Tambahkan validasi role
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        User::create([
+        $userData = [
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+            'role'     => $request->role, // Tambahkan ini
+        ];
+
+        // Handle foto profil upload
+        if ($request->hasFile('foto_profil')) {
+            Log::info('Processing foto profil upload');
+
+            $fotoProfil = $request->file('foto_profil');
+            $filename = time() . '_' . $fotoProfil->getClientOriginalName();
+
+            Log::info('File details', [
+                'original_name' => $fotoProfil->getClientOriginalName(),
+                'extension' => $fotoProfil->getClientOriginalExtension(),
+                'size' => $fotoProfil->getSize(),
+                'mime_type' => $fotoProfil->getMimeType()
+            ]);
+
+            // Store file
+            $path = $fotoProfil->storeAs('public/foto-profil', $filename);
+            Log::info('File stored at: ' . $path);
+
+            // Verify file exists
+            $fileExists = Storage::exists('public/foto-profil/' . $filename);
+            Log::info('File exists after storage: ' . ($fileExists ? 'YES' : 'NO'));
+
+            $userData['foto_profil'] = $filename;
+        }
+
+        $user = User::create($userData);
+        Log::info('User created successfully', ['user_id' => $user->id, 'role' => $user->role]);
 
         return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -68,26 +114,79 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('pages.user.edit', compact('user'));
+        $roles = ['Super Admin', 'Administrator', 'Pelanggan', 'Mitra'];
+        return view('pages.user.edit', compact('user', 'roles'));
     }
 
     // Update data user
     public function update(Request $request, $id)
     {
+        Log::info('Update user request received', [
+            'user_id' => $id,
+            'data' => $request->except(['password', 'password_confirmation'])
+        ]);
+
         $user = User::findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6',
+            'password' => 'nullable|min:6|confirmed',
+            'role' => 'required|in:Super Admin,Administrator,Pelanggan,Mitra', // Tambahkan validasi role
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->only(['name', 'email']);
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role, // Tambahkan ini
+        ];
+
+        // Update password jika diisi
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
+            Log::info('Password updated for user: ' . $user->id);
+        }
+
+        // Handle foto profil upload
+        if ($request->hasFile('foto_profil')) {
+            Log::info('Processing foto profil update');
+
+            $fotoProfil = $request->file('foto_profil');
+            $filename = time() . '_' . $fotoProfil->getClientOriginalName();
+
+            Log::info('New file details', [
+                'original_name' => $fotoProfil->getClientOriginalName(),
+                'extension' => $fotoProfil->getClientOriginalExtension(),
+                'size' => $fotoProfil->getSize()
+            ]);
+
+            // Hapus foto lama jika ada
+            if ($user->foto_profil) {
+                $oldFileExists = Storage::exists('public/foto-profil/' . $user->foto_profil);
+                Log::info('Old file exists: ' . ($oldFileExists ? 'YES' : 'NO'));
+
+                if ($oldFileExists) {
+                    Storage::delete('public/foto-profil/' . $user->foto_profil);
+                    Log::info('Old file deleted: ' . $user->foto_profil);
+                }
+            }
+
+            // Store file baru
+            $path = $fotoProfil->storeAs('public/foto-profil', $filename);
+            Log::info('New file stored at: ' . $path);
+
+            // Verify file exists
+            $fileExists = Storage::exists('public/foto-profil/' . $filename);
+            Log::info('New file exists after storage: ' . ($fileExists ? 'YES' : 'NO'));
+
+            $data['foto_profil'] = $filename;
+        } else {
+            Log::info('No new foto profil uploaded');
         }
 
         $user->update($data);
+        Log::info('User updated successfully', ['user_id' => $user->id, 'role' => $user->role]);
 
         return redirect()->route('user.index')->with('success', 'User berhasil diperbarui.');
     }
@@ -95,9 +194,31 @@ class UserController extends Controller
     // Hapus user
     public function destroy($id)
     {
+        Log::info('Delete user request received', ['user_id' => $id]);
+
         $user = User::findOrFail($id);
+
+        // Hapus foto profil jika ada
+        if ($user->foto_profil) {
+            $fileExists = Storage::exists('public/foto-profil/' . $user->foto_profil);
+            Log::info('Foto profil exists for deletion: ' . ($fileExists ? 'YES' : 'NO'));
+
+            if ($fileExists) {
+                Storage::delete('public/foto-profil/' . $user->foto_profil);
+                Log::info('Foto profil deleted: ' . $user->foto_profil);
+            }
+        }
+
         $user->delete();
+        Log::info('User deleted successfully', ['user_id' => $id]);
 
         return redirect()->route('user.index')->with('success', 'User berhasil dihapus.');
+    }
+
+    // Show user details
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        return view('pages.user.show', compact('user'));
     }
 }

@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('peristiwa_pindah', function (Blueprint $table) {
-            $table->id('pindah_id');
-            $table->foreignId('warga_id');
-            $table->date('tgl_pindah');
-            $table->text('alamat_tujuan');
-            $table->string('alasan');
-            $table->string('no_surat');
+        Schema::create('multipleuploads', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('peristiwa_pindah');
+        Schema::dropIfExists('multipleuploads');
     }
 };

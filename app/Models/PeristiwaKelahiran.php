@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models;  // ✅ Harus App\Models
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Media;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PeristiwaKelahiran extends Model
+class PeristiwaKelahiran extends Model  // ✅ Perhatikan huruf besar/kecil
 {
     use HasFactory;
 
+    // ✅ Tentukan nama tabel
     protected $table = 'peristiwa_kelahiran';
+
     protected $primaryKey = 'kelahiran_id';
-    public $timestamps = false;
 
     protected $fillable = [
         'warga_id',
@@ -19,22 +21,19 @@ class PeristiwaKelahiran extends Model
         'tempat_lahir',
         'ayah_warga_id',
         'ibu_warga_id',
-        'no_akta',
+        'no_akta'
     ];
 
-    // Relasi ke tabel warga
-    public function warga()
-    {
-        return $this->belongsTo(Warga::class, 'warga_id');
-    }
+    protected $casts = [
+        'tgl_lahir' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
-    public function ayah()
+    // Relasi ke media
+    public function media()
     {
-        return $this->belongsTo(Warga::class, 'ayah_warga_id');
-    }
-
-    public function ibu()
-    {
-        return $this->belongsTo(Warga::class, 'ibu_warga_id');
+        return $this->hasMany(Media::class, 'ref_id', 'kelahiran_id')
+            ->where('ref_table', 'peristiwa_kelahiran');
     }
 }
