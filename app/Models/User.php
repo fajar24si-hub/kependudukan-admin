@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -16,6 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'foto_profil',
         'last_login',
         'email_verified_at',
     ];
@@ -29,6 +31,59 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'last_login' => 'datetime',
     ];
+
+    // Tambahkan accessor untuk foto profil
+    public function getFotoProfilUrlAttribute()
+    {
+        if ($this->foto_profil) {
+            // Cek apakah file ada di storage public
+            if (Storage::disk('public')->exists($this->foto_profil)) {
+                return asset('storage/' . $this->foto_profil);
+            }
+
+            // Kompatibilitas dengan format lama
+            if (Storage::disk('public')->exists('foto-profil/' . $this->foto_profil)) {
+                return asset('storage/foto-profil/' . $this->foto_profil);
+            }
+
+            // Cek di path publik langsung
+            if (file_exists(public_path('storage/' . $this->foto_profil))) {
+                return asset('storage/' . $this->foto_profil);
+            }
+        }
+
+        // Default avatar jika tidak ada foto
+        return asset('asset-admin/img/user.jpg');
+    }
+
+    // Cek apakah user memiliki foto profil
+    public function hasFotoProfil()
+    {
+        if (!$this->foto_profil) {
+            return false;
+        }
+
+        // Cek berbagai kemungkinan lokasi file
+        if (Storage::disk('public')->exists($this->foto_profil)) {
+            return true;
+        }
+
+        if (Storage::disk('public')->exists('foto-profil/' . $this->foto_profil)) {
+            return true;
+        }
+
+        if (file_exists(public_path('storage/' . $this->foto_profil))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Get user role display
+    public function getRoleDisplayAttribute()
+    {
+        return $this->role ?? 'Administrator';
+    }
 
     /**
      * Check if email is verified
@@ -61,7 +116,6 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
-        // You can customize this if needed
         $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);
     }
 }

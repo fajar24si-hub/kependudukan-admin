@@ -143,6 +143,7 @@
             margin: 0 auto;
         }
 
+        /* =============== SIDEBAR STYLES =============== */
         /* User Profile */
         .user-profile {
             padding: 20px;
@@ -152,6 +153,7 @@
             gap: 15px;
         }
 
+        /* Foto Profil di Sidebar - Lebih Bagus */
         .user-avatar {
             width: 50px;
             height: 50px;
@@ -159,36 +161,83 @@
             overflow: hidden;
             border: 3px solid var(--primary-color);
             position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-light);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
         }
 
         .user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover img {
+            transform: scale(1.1);
         }
 
         .user-online {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 12px;
-            height: 12px;
-            background: var(--success-color);
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            background: #10b981;
             border-radius: 50%;
             border: 2px solid var(--dark-color);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+            z-index: 2;
         }
 
+        /* User Info di Sidebar */
         .user-info h6 {
             color: white;
             font-weight: 600;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             font-size: 15px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .user-info span {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 13px;
             font-weight: 400;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        /* Last Login Style untuk Sidebar */
+        .user-info .last-login {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            padding: 3px 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info .last-login i {
+            color: white !important;
+            font-size: 10px;
+            margin-right: 6px;
+            opacity: 0.9;
+        }
+
+        .user-info .last-login small {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
         }
 
         /* Navigation */
@@ -258,6 +307,7 @@
             color: white;
         }
 
+        /* =============== NAVBAR STYLES =============== */
         /* Top Navbar */
         .top-navbar {
             height: var(--header-height);
@@ -378,6 +428,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Foto Profil di Navbar - Lebih Bagus */
+        .navbar-inner .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-inner .user-avatar:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-dark);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Dropdown Header Avatar */
+        .dropdown-header .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-width: 3px;
+            border-color: var(--primary-light);
+        }
+
+        /* Last Login di Dropdown */
+        .dropdown-item .fa-clock {
+            color: var(--primary-color);
+            width: 16px;
+            text-align: center;
         }
 
         /* Main Content Area */
@@ -537,7 +619,7 @@
             overflow: hidden;
         }
 
-        /* Responsive */
+        /* =============== RESPONSIVE =============== */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -608,6 +690,29 @@
             .logo-tagline {
                 font-size: 10px;
             }
+
+            .navbar-inner .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-width: 2px;
+            }
+
+            .user-avatar {
+                width: 45px;
+                height: 45px;
+            }
+
+            .user-info h6 {
+                font-size: 14px;
+            }
+
+            .user-info span {
+                font-size: 12px;
+            }
+
+            .user-info .last-login small {
+                font-size: 9px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -658,6 +763,31 @@
                 font-size: 9px;
                 max-width: 150px;
             }
+        }
+
+        /* =============== AVATAR FALLBACK =============== */
+        .user-avatar img[src*="asset-admin/img/user.jpg"] {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 3px;
+        }
+
+        /* Placeholder untuk foto yang error */
+        .user-avatar img[onerror]:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            content: '\f007';
+            font-size: 20px;
         }
 
         /* Animations */

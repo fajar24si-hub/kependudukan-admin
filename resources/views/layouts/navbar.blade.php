@@ -48,25 +48,51 @@
 
             <!-- User Dropdown -->
             <div class="dropdown">
+                @php
+                    $user = Auth::user();
+                    $hasFoto = $user && $user->hasFotoProfil();
+                    $avatarUrl = $hasFoto ? $user->foto_profil_url : asset('asset-admin/img/placeholder-user.jpg');
+                @endphp
+
                 <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
-                   data-bs-toggle="dropdown">
-                    <div class="user-avatar" style="width: 40px; height: 40px;">
-                        <img src="{{ asset('asset-admin/img/user.jpg') }}" alt="{{ Auth::user()->name ?? 'Admin' }}">
+                    data-bs-toggle="dropdown">
+                    <div class="user-avatar">
+                        <img src="{{ $avatarUrl }}" alt="{{ $user->name ?? 'Admin' }}"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            onerror="this.onerror=null; this.src='{{ asset('asset-admin/img/placeholder-user.jpg') }}';">
+                    </div>
+                    <div class="ms-2 d-none d-md-block">
+                        <span class="fw-medium">{{ $user->name ?? 'Admin' }}</span>
+                        <small class="d-block text-muted">{{ $user->role_display ?? 'Administrator' }}</small>
                     </div>
                 </a>
-                <div class="dropdown-menu dropdown-menu-end" style="min-width: 200px;">
+                <div class="dropdown-menu dropdown-menu-end" style="min-width: 250px;">
                     <div class="dropdown-header">
-                        <h6 class="mb-0">{{ Auth::user()->name ?? 'Admin' }}</h6>
-                        <small class="text-muted">Administrator</small>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar me-3">
+                                <img src="{{ $avatarUrl }}" alt="{{ $user->name ?? 'Admin' }}"
+                                    style="width: 100%; height: 100%; object-fit: cover;"
+                                    onerror="this.onerror=null; this.src='{{ asset('asset-admin/img/placeholder-user.jpg') }}';">
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ $user->name ?? 'Admin' }}</h6>
+                                <small class="text-muted">{{ $user->role_display ?? 'Administrator' }}</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-user-circle me-2"></i> Profile
+                    <a href="{{ route('user.show', $user->id) }}" class="dropdown-item">
+                        <i class="fas fa-user-circle me-2"></i> My Profile
                     </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-clock me-2"></i>
-                        Last Login: {{ session('last_login', 'N/A') }}
+                    <a href="{{ route('user.edit', $user->id) }}" class="dropdown-item">
+                        <i class="fas fa-cog me-2"></i> Settings
                     </a>
+                    @if (session('last_login'))
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-clock me-2"></i>
+                            Last Login: {{ \Carbon\Carbon::parse(session('last_login'))->format('d/m/Y H:i') }}
+                        </a>
+                    @endif
                     <div class="dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

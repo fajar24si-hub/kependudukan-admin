@@ -228,10 +228,10 @@
                                             <div class="avatar-lg rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto"
                                                  style="width: 180px; height: 180px; border: 2px dashed #6c757d;">
                                                 <div class="text-center">
-                                                    <img src="{{ asset('img/placeholder-user.jpg') }}" alt="Placeholder User"
+                                                    <img src="{{ asset('asset-admin/img/placeholder-user.jpg') }}" alt="Placeholder User"
                                                          class="img-fluid rounded-circle"
                                                          style="width: 160px; height: 160px; object-fit: cover; opacity: 0.8;">
-                                                    <p class="text-muted small mt-2">Placeholder Default</p>
+                                                    
                                                 </div>
                                             </div>
                                             <p class="text-muted small mt-2">

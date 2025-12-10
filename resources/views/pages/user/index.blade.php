@@ -139,7 +139,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
                                         @php
-                                            $withPhoto = $users->whereNotNull('foto_profil')->where('foto_profil', '!=', '')->count();
+                                            $withPhoto = $users->whereNotNull('foto_profil')->count();
                                         @endphp
                                         <h4 class="mb-0">{{ $withPhoto }}</h4>
                                         <small class="text-muted">Dengan Foto</small>
@@ -194,36 +194,38 @@
                                         <div class="avatar-frame position-relative" style="width: 70px; height: 70px;">
                                             @php
                                                 $hasPhoto = false;
-                                                $photoPath = null;
+                                                $photoUrl = null;
 
-                                                if ($user->foto_profil && !empty(trim($user->foto_profil))) {
-                                                    $storagePath = 'storage/' . $user->foto_profil;
-                                                    $publicPath = $user->foto_profil;
-
-                                                    if (file_exists(public_path($storagePath))) {
+                                                if ($user->foto_profil) {
+                                                    // Cek apakah file ada di storage
+                                                    if (Storage::disk('public')->exists($user->foto_profil)) {
                                                         $hasPhoto = true;
-                                                        $photoPath = asset($storagePath);
-                                                    } elseif (file_exists(public_path($publicPath))) {
+                                                        $photoUrl = asset('storage/' . $user->foto_profil);
+                                                    }
+                                                    // Jika format hanya nama file (kompatibilitas lama)
+                                                    elseif (Storage::disk('public')->exists('foto-profil/' . $user->foto_profil)) {
                                                         $hasPhoto = true;
-                                                        $photoPath = asset($publicPath);
-                                                    } elseif (strpos($user->foto_profil, 'http') === 0) {
+                                                        $photoUrl = asset('storage/foto-profil/' . $user->foto_profil);
+                                                    }
+                                                    // Jika file ada di path publik langsung
+                                                    elseif (file_exists(public_path('storage/' . $user->foto_profil))) {
                                                         $hasPhoto = true;
-                                                        $photoPath = $user->foto_profil;
+                                                        $photoUrl = asset('storage/' . $user->foto_profil);
                                                     }
                                                 }
                                             @endphp
 
-                                            @if($hasPhoto)
-                                                <img src="{{ $photoPath }}"
+                                            @if($hasPhoto && $photoUrl)
+                                                <img src="{{ $photoUrl }}"
                                                      alt="Foto Profil {{ $user->name }}"
                                                      class="img-fluid rounded-circle w-100 h-100"
                                                      style="object-fit: cover; border: 2px solid #28a745;"
-                                                     onerror="this.onerror=null; this.src='{{ asset('img/placeholder-user.jpg') }}'">
+                                                     onerror="this.onerror=null; this.src='{{ asset('asset-admin/img/placeholder-user.jpg') }}'">
                                                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
                                                     <i class="fas fa-camera fa-xs text-white"></i>
                                                 </span>
                                             @else
-                                                <img src="{{ asset('img/placeholder-user.jpg') }}"
+                                                <img src="{{ asset('asset-admin/img/placeholder-user.jpg') }}"
                                                      alt="Foto Profil {{ $user->name }}"
                                                      class="img-fluid rounded-circle w-100 h-100"
                                                      style="object-fit: cover; border: 2px dashed #6c757d; opacity: 0.8;">
@@ -239,6 +241,17 @@
                                         <div class="flex-grow-1">
                                             <h6 class="mb-0">{{ $user->name }}</h6>
                                             <div class="d-flex align-items-center mt-1 gap-2">
+                                                @php
+                                                    $hasPhoto = false;
+                                                    if ($user->foto_profil) {
+                                                        if (Storage::disk('public')->exists($user->foto_profil) ||
+                                                            Storage::disk('public')->exists('foto-profil/' . $user->foto_profil) ||
+                                                            file_exists(public_path('storage/' . $user->foto_profil))) {
+                                                            $hasPhoto = true;
+                                                        }
+                                                    }
+                                                @endphp
+
                                                 @if($hasPhoto)
                                                     <span class="badge bg-success bg-opacity-25 text-success border border-success">
                                                         <i class="fas fa-camera me-1 fa-xs"></i> Foto
@@ -336,7 +349,7 @@
                             <tr>
                                 <td colspan="7" class="text-center py-4">
                                     <div class="text-muted">
-                                        <img src="{{ asset('img/placeholder-user.jpg') }}"
+                                        <img src="{{ asset('asset-admin/img/placeholder-user.jpg') }}"
                                              alt="No Users"
                                              class="rounded-circle mb-3"
                                              style="width: 80px; height: 80px; object-fit: cover; opacity: 0.5;">
@@ -425,6 +438,14 @@
     font-size: 10px;
     padding: 2px 4px;
 }
+
+.img-thumbnail {
+    transition: all 0.3s ease;
+}
+
+.img-thumbnail:hover {
+    transform: scale(1.1);
+}
 </style>
 @endpush
 
@@ -452,16 +473,22 @@ function confirmDelete(userName) {
     return confirm('Apakah Anda yakin ingin menghapus user "' + userName + '"?');
 }
 
-// Image error handling
+// Image error handling with fallback
 document.addEventListener('DOMContentLoaded', function() {
     const images = document.querySelectorAll('img');
+    const placeholderUrl = '{{ asset("asset-admin/img/placeholder-user.jpg") }}';
+
     images.forEach(img => {
+        // Jika gambar gagal load
         img.addEventListener('error', function() {
             if (!this.src.includes('placeholder-user.jpg')) {
-                this.src = '{{ asset("img/placeholder-user.jpg") }}';
+                console.log('Image failed to load:', this.src);
+                this.src = placeholderUrl;
                 this.style.opacity = '0.8';
                 this.style.borderStyle = 'dashed';
+                this.style.borderColor = '#6c757d';
 
+                // Update badge jika ada
                 const parentRow = this.closest('tr');
                 if (parentRow) {
                     const photoBadge = parentRow.querySelector('.badge');
@@ -472,15 +499,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    });
 
-    images.forEach(img => {
-        if (img.complete && img.naturalHeight === 0) {
-            if (!img.src.includes('placeholder-user.jpg')) {
-                img.src = '{{ asset("img/placeholder-user.jpg") }}';
+        // Cek gambar yang sudah selesai load tapi mungkin gagal
+        if (img.complete) {
+            if (img.naturalHeight === 0 || img.naturalWidth === 0) {
+                if (!img.src.includes('placeholder-user.jpg')) {
+                    console.log('Image loaded but zero dimensions:', img.src);
+                    img.src = placeholderUrl;
+                }
             }
         }
     });
 });
+
+// Debug function untuk cek foto
+function debugUserPhoto(userId) {
+    fetch(`/api/debug-user-photo/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Photo debug info:', data);
+            if (data.exists && data.url) {
+                alert(`Foto ditemukan:\nPath: ${data.path}\nURL: ${data.url}`);
+            } else {
+                alert('Foto tidak ditemukan atau path tidak valid.');
+            }
+        })
+        .catch(error => console.error('Debug error:', error));
+}
 </script>
 @endpush

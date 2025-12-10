@@ -18,13 +18,30 @@
     <!-- User Profile -->
     <div class="user-profile">
         <div class="user-avatar">
-            <img src="{{ asset('asset-admin/img/user.jpg') }}" alt="{{ Auth::user()->name ?? 'Admin' }}"
-                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'Admin') }}&background=2563eb&color=fff&size=50';">
+            @php
+                $user = Auth::user();
+                $hasFoto = $user && $user->hasFotoProfil();
+            @endphp
+
+            @if ($hasFoto)
+                <img src="{{ $user->foto_profil_url }}" alt="{{ $user->name ?? 'Admin' }}"
+                    onerror="this.onerror=null; this.src='{{ asset('asset-admin/img/placeholder-user.jpg') }}';">
+            @else
+                <img src="{{ asset('asset-admin/img/placeholder-user.jpg') }}" alt="{{ $user->name ?? 'Admin' }}"
+                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name ?? 'Admin') }}&background=2563eb&color=fff&size=50';">
+            @endif
             <div class="user-online"></div>
         </div>
         <div class="user-info">
-            <h6>{{ Auth::user()->name ?? 'Admin' }}</h6>
-            <span>Administrator</span>
+            <h6>{{ $user->name ?? 'Admin' }}</h6>
+            <span>{{ $user->role_display ?? 'Administrator' }}</span>
+
+            @if (session('last_login'))
+                <div class="last-login">
+                    <i class="fas fa-clock"></i>
+                    <small>{{ \Carbon\Carbon::parse(session('last_login'))->format('d/m/Y H:i') }}</small>
+                </div>
+            @endif
         </div>
     </div>
 

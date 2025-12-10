@@ -68,7 +68,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'role'     => 'required|in:Super Admin,Administrator,Pelanggan,Mitra', // Tambahkan validasi role
+            'role'     => 'required|in:Super Admin,Administrator,Pelanggan,Mitra',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -76,7 +76,7 @@ class UserController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role, // Tambahkan ini
+            'role'     => $request->role,
         ];
 
         // Handle foto profil upload
@@ -93,19 +93,26 @@ class UserController extends Controller
                 'mime_type' => $fotoProfil->getMimeType()
             ]);
 
-            // Store file
-            $path = $fotoProfil->storeAs('public/foto-profil', $filename);
+            // Store file - PERBAIKAN DI SINI
+            $path = $fotoProfil->storeAs('foto-profil', $filename, 'public'); // Simpan di storage/app/public
             Log::info('File stored at: ' . $path);
 
             // Verify file exists
-            $fileExists = Storage::exists('public/foto-profil/' . $filename);
+            $fileExists = Storage::disk('public')->exists('foto-profil/' . $filename);
             Log::info('File exists after storage: ' . ($fileExists ? 'YES' : 'NO'));
 
-            $userData['foto_profil'] = $filename;
+            // Simpan path RELATIF untuk storage public
+            $userData['foto_profil'] = 'foto-profil/' . $filename; // Simpan path lengkap
+        } else {
+            Log::info('No foto profil uploaded, will use default');
         }
 
         $user = User::create($userData);
-        Log::info('User created successfully', ['user_id' => $user->id, 'role' => $user->role]);
+        Log::info('User created successfully', [
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'foto_profil' => $user->foto_profil
+        ]);
 
         return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -132,14 +139,14 @@ class UserController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6|confirmed',
-            'role' => 'required|in:Super Admin,Administrator,Pelanggan,Mitra', // Tambahkan validasi role
+            'role' => 'required|in:Super Admin,Administrator,Pelanggan,Mitra',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role, // Tambahkan ini
+            'role' => $request->role,
         ];
 
         // Update password jika diisi
@@ -163,36 +170,51 @@ class UserController extends Controller
 
             // Hapus foto lama jika ada
             if ($user->foto_profil) {
-                $oldFileExists = Storage::exists('public/foto-profil/' . $user->foto_profil);
+                $oldFileExists = Storage::disk('public')->exists($user->foto_profil);
                 Log::info('Old file exists: ' . ($oldFileExists ? 'YES' : 'NO'));
 
                 if ($oldFileExists) {
-                    Storage::delete('public/foto-profil/' . $user->foto_profil);
+                    Storage::disk('public')->delete($user->foto_profil);
                     Log::info('Old file deleted: ' . $user->foto_profil);
                 }
             }
 
-            // Store file baru
-            $path = $fotoProfil->storeAs('public/foto-profil', $filename);
+            // Store file baru - PERBAIKAN DI SINI
+            $path = $fotoProfil->storeAs('foto-profil', $filename, 'public');
             Log::info('New file stored at: ' . $path);
 
             // Verify file exists
-            $fileExists = Storage::exists('public/foto-profil/' . $filename);
+            $fileExists = Storage::disk('public')->exists('foto-profil/' . $filename);
             Log::info('New file exists after storage: ' . ($fileExists ? 'YES' : 'NO'));
 
-            $data['foto_profil'] = $filename;
+            // Simpan path lengkap
+            $data['foto_profil'] = 'foto-profil/' . $filename;
         } else {
             Log::info('No new foto profil uploaded');
+
+            // Jika user memilih untuk menghapus foto
+            if ($request->has('remove_photo') && $user->foto_profil) {
+                Log::info('Removing existing photo per user request');
+                $oldFileExists = Storage::disk('public')->exists($user->foto_profil);
+                if ($oldFileExists) {
+                    Storage::disk('public')->delete($user->foto_profil);
+                }
+                $data['foto_profil'] = null;
+            }
         }
 
         $user->update($data);
-        Log::info('User updated successfully', ['user_id' => $user->id, 'role' => $user->role]);
+        Log::info('User updated successfully', [
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'foto_profil' => $user->foto_profil
+        ]);
 
         return redirect()->route('user.index')->with('success', 'User berhasil diperbarui.');
     }
 
     // Hapus user
-    public function destroy($id)
+     public function destroy($id)
     {
         Log::info('Delete user request received', ['user_id' => $id]);
 
@@ -200,11 +222,11 @@ class UserController extends Controller
 
         // Hapus foto profil jika ada
         if ($user->foto_profil) {
-            $fileExists = Storage::exists('public/foto-profil/' . $user->foto_profil);
+            $fileExists = Storage::disk('public')->exists($user->foto_profil);
             Log::info('Foto profil exists for deletion: ' . ($fileExists ? 'YES' : 'NO'));
 
             if ($fileExists) {
-                Storage::delete('public/foto-profil/' . $user->foto_profil);
+                Storage::disk('public')->delete($user->foto_profil);
                 Log::info('Foto profil deleted: ' . $user->foto_profil);
             }
         }
