@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +43,7 @@
             box-sizing: border-box;
         }
 
-        /* Slideshow Background Terluar - HANYA INI YANG DITAMBAHKAN */
+        /* Slideshow Background Terluar */
         .fullscreen-slideshow {
             position: fixed;
             top: 0;
@@ -75,7 +76,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3); /* Overlay gelap tipis */
+            background: rgba(0, 0, 0, 0.3);
+            /* Overlay gelap tipis */
             z-index: -1;
         }
 
@@ -125,13 +127,15 @@
         }
 
         .auth-card {
-            background: rgba(255, 255, 255, 0.95); /* Sedikit transparan */
+            background: rgba(255, 255, 255, 0.95);
+            /* Sedikit transparan */
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--box-shadow);
             display: flex;
             min-height: 680px;
-            backdrop-filter: blur(5px); /* Efek blur background */
+            backdrop-filter: blur(5px);
+            /* Efek blur background */
             -webkit-backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -179,13 +183,13 @@
         }
 
         .auth-logo img {
-            width: 120px;
-            height: 120px;
+            width: 300px;
+            height: 300px;
             object-fit: contain;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 15px;
+            border-radius: 25px;
+            padding: 0px;
             backdrop-filter: blur(10px);
         }
 
@@ -408,7 +412,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Links - TIDAK BERUBAH */
@@ -521,6 +527,13 @@
 
         /* Responsive Styles - TIDAK BERUBAH */
         @media (max-width: 992px) {
+            .auth-logo img {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 992px) {
             .auth-card {
                 flex-direction: column;
                 min-height: auto;
@@ -572,8 +585,15 @@
 
         /* Animation - TIDAK BERUBAH */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .fade-in {
@@ -583,24 +603,24 @@
 
     @stack('styles')
 </head>
+
 <body>
     <!-- Slideshow Background Terluar - HANYA INI YANG DITAMBAHKAN -->
     <div class="fullscreen-slideshow" id="fullscreenSlideshow">
         <!-- Slide 1 -->
         <div class="fullscreen-slide active"
-             style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow1.jpg') }}');"></div>
+            style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow1.jpg') }}');"></div>
 
         <!-- Slide 2 -->
         <div class="fullscreen-slide"
-             style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow2.jpg') }}');"></div>
+            style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow2.jpg') }}');"></div>
 
         <!-- Slide 3 -->
         <div class="fullscreen-slide"
-             style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow3.jpg') }}');"></div>
+            style="background-image: url('{{ asset('asset-admin/img/slideshow/slideshow3.jpg') }}');"></div>
 
         <!-- Fallback jika gambar tidak ada -->
-        <div class="fullscreen-slide"
-             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+        <div class="fullscreen-slide" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
     </div>
 
     <!-- Overlay gelap tipis untuk readability -->
@@ -615,11 +635,11 @@
 
     <div class="auth-container">
         <div class="auth-card">
-            <!-- Left Panel: Branding & Features - TIDAK BERUBAH -->
+            <!-- Left Panel: Branding & Features -->
             <div class="auth-left">
                 <div class="auth-logo">
                     <img src="{{ asset('asset-admin/img/LogoKotak.png') }}" alt="Logo Kependudukan"
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/120x120/2563eb/ffffff?text=LOGO';">
+                        onerror="this.onerror=null; this.src='https://via.placeholder.com/120x120/2563eb/ffffff?text=LOGO';">
                     <h1>KEPENDUDUKAN</h1>
                     <p>Data Akurat, Pelayanan Cepat</p>
                 </div>
@@ -668,26 +688,26 @@
                 </div>
 
                 <!-- Notifications -->
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success fade-in">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
                     </div>
                 @endif
 
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger fade-in">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
                     </div>
                 @endif
 
-                @if($errors->any())
+                @if ($errors->any())
                     <div class="alert alert-danger fade-in">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         <strong>Terjadi kesalahan:</strong>
                         <ul class="mb-0 mt-2">
-                            @foreach($errors->all() as $error)
+                            @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
@@ -835,4 +855,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

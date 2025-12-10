@@ -37,6 +37,7 @@ Route::middleware(['checkislogin'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/quick-stats', [DashboardController::class, 'quickStats'])->name('dashboard.quick-stats');
 
     // ========== ROUTE DENGAN CHECKISLOGIN + CHECKROLE:SUPER ADMIN ==========
     Route::middleware(['checkrole:Super Admin'])->group(function () {

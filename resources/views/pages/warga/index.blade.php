@@ -41,11 +41,11 @@
                     <div class="card border mb-4">
                         <div class="card-body">
                             <form action="{{ route('warga.index') }}" method="GET" class="row g-3">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label class="form-label">Cari Warga</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-search"></i>
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-search text-muted"></i>
                                         </span>
                                         <input type="text" class="form-control" name="search"
                                             value="{{ request('search') }}" placeholder="NIK, nama, alamat...">
@@ -89,16 +89,14 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <label class="form-label">Tanggal Lahir Mulai</label>
-                                    <input type="date" class="form-control" name="start_date"
-                                        value="{{ request('start_date') }}">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label class="form-label">Tanggal Lahir Akhir</label>
-                                    <input type="date" class="form-control" name="end_date"
-                                        value="{{ request('end_date') }}">
+                                <div class="col-md-2">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status_warga">
+                                        <option value="">Semua Status</option>
+                                        <option value="Aktif" {{ request('status_warga') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="Meninggal" {{ request('status_warga') == 'Meninggal' ? 'selected' : '' }}>Meninggal</option>
+                                        <option value="Pindah" {{ request('status_warga') == 'Pindah' ? 'selected' : '' }}>Pindah</option>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6 d-flex align-items-end">
@@ -136,18 +134,14 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
                                             @php
-                                                $lakiCount =
-                                                    $data->total() > 0
-                                                        ? \App\Models\Warga::when(request('search'), function ($q) {
-                                                            $q->where(
-                                                                'nama',
-                                                                'like',
-                                                                '%' . request('search') . '%',
-                                                            )->orWhere('nik', 'like', '%' . request('search') . '%');
-                                                        })
-                                                            ->where('jenis_kelamin', 'L')
-                                                            ->count()
-                                                        : 0;
+                                                $lakiCount = $data->total() > 0
+                                                    ? \App\Models\Warga::when(request('search'), function ($q) {
+                                                        $q->where('nama', 'like', '%'.request('search').'%')
+                                                          ->orWhere('nik', 'like', '%'.request('search').'%');
+                                                    })
+                                                    ->where('jenis_kelamin', 'L')
+                                                    ->count()
+                                                    : 0;
                                             @endphp
                                             <h4 class="mb-0">{{ $lakiCount }}</h4>
                                             <small class="text-muted">Laki-laki</small>
@@ -165,18 +159,14 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
                                             @php
-                                                $perempuanCount =
-                                                    $data->total() > 0
-                                                        ? \App\Models\Warga::when(request('search'), function ($q) {
-                                                            $q->where(
-                                                                'nama',
-                                                                'like',
-                                                                '%' . request('search') . '%',
-                                                            )->orWhere('nik', 'like', '%' . request('search') . '%');
-                                                        })
-                                                            ->where('jenis_kelamin', 'P')
-                                                            ->count()
-                                                        : 0;
+                                                $perempuanCount = $data->total() > 0
+                                                    ? \App\Models\Warga::when(request('search'), function ($q) {
+                                                        $q->where('nama', 'like', '%'.request('search').'%')
+                                                          ->orWhere('nik', 'like', '%'.request('search').'%');
+                                                    })
+                                                    ->where('jenis_kelamin', 'P')
+                                                    ->count()
+                                                    : 0;
                                             @endphp
                                             <h4 class="mb-0">{{ $perempuanCount }}</h4>
                                             <small class="text-muted">Perempuan</small>
@@ -221,26 +211,22 @@
                                     <th>
                                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}"
                                             class="text-decoration-none d-flex align-items-center">
-                                            Nama
+                                            Nama Lengkap
                                             <i class="fas fa-sort ms-1 small"></i>
                                         </a>
                                     </th>
                                     <th>Jenis Kelamin</th>
                                     <th>Tempat/Tgl Lahir</th>
-                                    <th>Agama</th>
-                                    <th>Pendidikan</th>
-                                    <th>Pekerjaan</th>
-                                    <th width="12%" class="text-center">Aksi</th>
+                                    <th>Status</th>
+                                    <th width="15%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($data as $item)
                                     <tr>
                                         <td class="text-center">
-                                            <div
-                                                class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
-                                                <small
-                                                    class="text-primary fw-bold">{{ $loop->iteration + ($data->currentPage() - 1) * $data->perPage() }}</small>
+                                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                                <small class="text-primary fw-bold">{{ $loop->iteration }}</small>
                                             </div>
                                         </td>
                                         <td>
@@ -248,13 +234,18 @@
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div
-                                                    class="avatar-sm bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                                    <i class="fas fa-user text-info"></i>
+                                                <div class="avatar-sm bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                    @if($item->jenis_kelamin == 'L')
+                                                        <i class="fas fa-male text-success"></i>
+                                                    @else
+                                                        <i class="fas fa-female text-danger"></i>
+                                                    @endif
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">{{ $item->nama }}</h6>
-                                                    <small class="text-muted">ID: {{ $item->warga_id }}</small>
+                                                    <small class="text-muted">
+                                                        {{ $item->agama }} | {{ $item->pendidikan }}
+                                                    </small>
                                                 </div>
                                             </div>
                                         </td>
@@ -276,37 +267,50 @@
                                                 <small class="text-muted">
                                                     <i class="fas fa-calendar me-1"></i>
                                                     {{ \Carbon\Carbon::parse($item->tanggal_lahir)->format('d/m/Y') }}
-                                                    ({{ \Carbon\Carbon::parse($item->tanggal_lahir)->age }} tahun)
+                                                    @php
+                                                        $umur = \Carbon\Carbon::parse($item->tanggal_lahir)->age;
+                                                    @endphp
+                                                    @if($umur > 0)
+                                                        ({{ $umur }} tahun)
+                                                    @else
+                                                        (Baru lahir)
+                                                    @endif
                                                 </small>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">{{ $item->agama }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ $item->pendidikan }}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{ $item->pekerjaan }}</span>
+                                            @if($item->status_warga == 'Aktif')
+                                                <span class="badge bg-success">Aktif</span>
+                                            @elseif($item->status_warga == 'Meninggal')
+                                                <span class="badge bg-danger">Meninggal</span>
+                                            @elseif($item->status_warga == 'Pindah')
+                                                <span class="badge bg-warning">Pindah</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ $item->status_warga }}</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
                                                 <a href="{{ route('warga.edit', $item->warga_id) }}"
-                                                    class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
-                                                    title="Edit Warga">
+                                                   class="btn btn-sm btn-warning"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Edit Data">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-sm btn-info" data-bs-toggle="tooltip"
-                                                    title="Detail Warga">
+                                                <a href="{{ route('warga.show', $item->warga_id) }}"
+                                                   class="btn btn-sm btn-info"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Detail Warga">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <form action="{{ route('warga.destroy', $item->warga_id) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Hapus data warga {{ $item->nama }}?')">
+                                                      method="POST"
+                                                      onsubmit="return confirm('Hapus data warga {{ $item->nama }}?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger"
-                                                        data-bs-toggle="tooltip" title="Hapus Warga">
+                                                            data-bs-toggle="tooltip"
+                                                            title="Hapus Data">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -315,7 +319,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-4">
+                                        <td colspan="7" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-user-slash fa-3x mb-3"></i>
                                                 <h5>Belum ada data warga yang tersedia</h5>
@@ -356,7 +360,7 @@
             height: 36px;
         }
 
-        .table>thead {
+        .table > thead {
             background-color: var(--light-color);
         }
 
@@ -375,6 +379,15 @@
         .badge {
             padding: 0.35em 0.65em;
             font-weight: 500;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-color);
+        }
+
+        .card.border {
+            border: 1px solid var(--gray-color) !important;
         }
     </style>
 @endpush
@@ -396,6 +409,30 @@
                     bsAlert.close();
                 });
             }, 5000);
+
+            // Initialize datepickers
+            flatpickr("input[type=date]", {
+                dateFormat: "Y-m-d",
+                allowInput: true
+            });
+
+            // Filter form submission with loading
+            const filterForm = document.querySelector('form[method="GET"]');
+            if (filterForm) {
+                filterForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        const originalHTML = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memfilter...';
+
+                        setTimeout(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalHTML;
+                        }, 2000);
+                    }
+                });
+            }
         });
     </script>
 @endpush
