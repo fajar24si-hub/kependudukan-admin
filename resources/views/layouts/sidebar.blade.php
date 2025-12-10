@@ -88,7 +88,10 @@
                     class="dropdown-item {{ request()->is('peristiwa-kelahiran*') ? 'active' : '' }}">
                     <i class="fas fa-baby me-2"></i> Kelahiran
                 </a>
-                <!-- Add more events here -->
+                <a href="{{ route('peristiwa-kematian.index') }}"
+                    class="dropdown-item {{ request()->is('peristiwa-kematian') ? 'active' : '' }}">
+                    <i class="fas fa-baby me-2"></i> Kematian
+                </a>
             </div>
         </div>
 

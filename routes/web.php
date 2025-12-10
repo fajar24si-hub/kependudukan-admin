@@ -8,6 +8,7 @@ use App\Http\Controllers\PendudukController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeluargaKKController;
 use App\Http\Controllers\MultipleuploadsController;
+use App\Http\Controllers\PeristiwaKematianController;
 use App\Http\Controllers\PeristiwaKelahiranController;
 
 // ========== PUBLIC ROUTES (TANPA AUTH) ==========
@@ -60,6 +61,11 @@ Route::middleware(['checkislogin'])->group(function () {
     Route::resource('peristiwa-kelahiran', PeristiwaKelahiranController::class);
     Route::post('peristiwa-kelahiran/{id}/upload-files', [\App\Http\Controllers\PeristiwaKelahiranController::class, 'uploadFiles'])->name('peristiwa-kelahiran.upload-files');
     Route::delete('peristiwa-kelahiran/{id}/delete-file/{mediaId}', [\App\Http\Controllers\PeristiwaKelahiranController::class, 'deleteFile'])->name('peristiwa-kelahiran.delete-file');
+
+    // Peristiwa Kematian
+    Route::resource('peristiwa-kematian', PeristiwaKematianController::class);
+    Route::post('peristiwa-kematian/{id}/upload-files', [\App\Http\Controllers\PeristiwaKematianController::class, 'uploadFiles'])->name('peristiwa-kematian.upload-files');
+    Route::delete('peristiwa-kematian/{id}/delete-file/{mediaId}', [\App\Http\Controllers\PeristiwaKematianController::class, 'deleteFile'])->name('peristiwa-kematian.delete-file');
     // =========================================================
 
     // Multiple Uploads (jika sudah ada)
