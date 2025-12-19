@@ -23,6 +23,36 @@ class Media extends Model
 
     protected $appends = ['url', 'icon', 'file_type', 'is_image', 'is_pdf', 'is_previewable'];
 
+    // TAMBAHKAN INI untuk polymorphic relationships
+    protected $foreignKey = 'ref_id';
+    protected $morphClass = 'ref_table';
+
+    /**
+     * Get the parent model (polymorphic).
+     */
+    public function model()
+    {
+        return $this->morphTo(__FUNCTION__, 'ref_table', 'ref_id');
+    }
+
+    /**
+     * Scope untuk filter berdasarkan model
+     */
+    public function scopeWhereModel($query, $model, $id = null)
+    {
+        $modelClass = is_object($model) ? get_class($model) : $model;
+        $modelName = is_object($model) ? class_basename($model) : $model;
+
+        $query->where('ref_table', $modelClass);
+
+        if ($id) {
+            $query->where('ref_id', $id);
+        }
+
+        return $query;
+    }
+
+
     /**
      * Accessor: URL lengkap file
      */

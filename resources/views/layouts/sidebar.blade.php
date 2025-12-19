@@ -92,6 +92,10 @@
                     class="dropdown-item {{ request()->is('peristiwa-kematian') ? 'active' : '' }}">
                     <i class="fas fa-baby me-2"></i> Kematian
                 </a>
+                <a href="{{ route('pindah.index') }}"
+                    class="dropdown-item {{ request()->is('peristiwa-pindah*') ? 'active' : '' }}">
+                    <i class="fas fa-shuttle-van me-2"></i> Pindah
+                </a>
             </div>
         </div>
 
@@ -108,10 +112,6 @@
                 <a href="{{ route('user.index') }}"
                     class="dropdown-item {{ request()->is('user*') ? 'active' : '' }}">
                     <i class="fas fa-user-cog me-2"></i> Manajemen User
-                </a>
-                <a href="{{ route('uploads') }}"
-                    class="dropdown-item {{ request()->is('multipleuploads*') ? 'active' : '' }}">
-                    <i class="fas fa-upload me-2"></i> Upload Files
                 </a>
             </div>
         </div>

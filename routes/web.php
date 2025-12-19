@@ -8,6 +8,7 @@ use App\Http\Controllers\PendudukController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeluargaKKController;
 use App\Http\Controllers\MultipleuploadsController;
+use App\Http\Controllers\PeristiwaPindahController;
 use App\Http\Controllers\PeristiwaKematianController;
 use App\Http\Controllers\PeristiwaKelahiranController;
 
@@ -66,6 +67,26 @@ Route::middleware(['checkislogin'])->group(function () {
     Route::resource('peristiwa-kematian', PeristiwaKematianController::class);
     Route::post('peristiwa-kematian/{id}/upload-files', [\App\Http\Controllers\PeristiwaKematianController::class, 'uploadFiles'])->name('peristiwa-kematian.upload-files');
     Route::delete('peristiwa-kematian/{id}/delete-file/{mediaId}', [\App\Http\Controllers\PeristiwaKematianController::class, 'deleteFile'])->name('peristiwa-kematian.delete-file');
+
+    // Peristiwa Pindah -
+
+    Route::resource('pindah', PeristiwaPindahController::class)->names([
+        'index' => 'pindah.index',
+        'create' => 'pindah.create',
+        'store' => 'pindah.store',
+        'show' => 'pindah.show',
+        'edit' => 'pindah.edit',
+        'update' => 'pindah.update',
+        'destroy' => 'pindah.destroy'
+    ]);
+
+    // Routes tambahan untuk upload file
+    Route::post('pindah/{id}/upload-files', [PeristiwaPindahController::class, 'uploadFiles'])->name('pindah.upload-files');
+    Route::delete('pindah/{id}/delete-file/{mediaId}', [PeristiwaPindahController::class, 'deleteFile'])->name('pindah.delete-file');
+    Route::post('pindah/{id}/status', [PeristiwaPindahController::class, 'updateStatus'])
+        ->name('pindah.updateStatus');
+
+
     // =========================================================
 
     // Multiple Uploads (jika sudah ada)
