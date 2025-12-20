@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Models;  // ✅ Harus App\Models
+namespace App\Models;
 
-use App\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PeristiwaKelahiran extends Model  // ✅ Perhatikan huruf besar/kecil
+class PeristiwaKelahiran extends Model
 {
     use HasFactory;
 
-    // ✅ Tentukan nama tabel
     protected $table = 'peristiwa_kelahiran';
-
     protected $primaryKey = 'kelahiran_id';
 
     protected $fillable = [
@@ -30,10 +29,52 @@ class PeristiwaKelahiran extends Model  // ✅ Perhatikan huruf besar/kecil
         'updated_at' => 'datetime',
     ];
 
-    // Relasi ke media
-    public function media()
+    /**
+     * Relasi ke Warga (anak)
+     */
+    public function warga(): BelongsTo
+    {
+        return $this->belongsTo(Warga::class, 'warga_id', 'warga_id');
+    }
+
+    /**
+     * Relasi ke Warga (ayah)
+     */
+    public function ayah(): BelongsTo
+    {
+        return $this->belongsTo(Warga::class, 'ayah_warga_id', 'warga_id');
+    }
+
+    /**
+     * Relasi ke Warga (ibu)
+     */
+    public function ibu(): BelongsTo
+    {
+        return $this->belongsTo(Warga::class, 'ibu_warga_id', 'warga_id');
+    }
+
+    /**
+     * Relasi ke Media
+     */
+    public function media(): HasMany
     {
         return $this->hasMany(Media::class, 'ref_id', 'kelahiran_id')
             ->where('ref_table', 'peristiwa_kelahiran');
+    }
+
+    /**
+     * Accessor untuk tanggal lahir format
+     */
+    public function getTglLahirFormattedAttribute()
+    {
+        return $this->tgl_lahir->format('d/m/Y');
+    }
+
+    /**
+     * Accessor untuk tempat dan tanggal lahir lengkap
+     */
+    public function getTempatTglLahirAttribute()
+    {
+        return $this->tempat_lahir . ', ' . $this->tgl_lahir_formatted;
     }
 }
