@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\PeristiwaKelahiran;
 use App\Models\Media;
+use App\Models\Warga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -16,18 +17,12 @@ class PeristiwaKelahiranController extends Controller
      */
     public function index()
     {
-        $kelahirans = PeristiwaKelahiran::with('media')
+        $kelahirans = PeristiwaKelahiran::with(['warga', 'ayah', 'ibu', 'media'])
             ->latest()
-            ->get()
-            ->map(function ($kelahiran) {
-                // Convert tgl_lahir to Carbon if not already
-                if ($kelahiran->tgl_lahir && !$kelahiran->tgl_lahir instanceof \Carbon\Carbon) {
-                    $kelahiran->tgl_lahir = \Carbon\Carbon::parse($kelahiran->tgl_lahir);
-                }
-                return $kelahiran;
-            });
+            ->get();
 
-        return view('pages.kelahiran.index', compact('kelahirans'));
+        // PERBAIKAN: Sesuaikan dengan folder Kelahiran (huruf K kapital)
+        return view('pages.Kelahiran.index', compact('kelahirans'));
     }
 
     /**
@@ -35,8 +30,9 @@ class PeristiwaKelahiranController extends Controller
      */
     public function create()
     {
-        // ✅ Ubah path view
-        return view('pages.kelahiran.create');
+        $wargas = Warga::all();
+        // PERBAIKAN: Sesuaikan dengan folder Kelahiran (huruf K kapital)
+        return view('pages.Kelahiran.create', compact('wargas'));
     }
 
     /**
@@ -45,13 +41,17 @@ class PeristiwaKelahiranController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'no_akta' => 'required|unique:peristiwa_kelahiran',
+            'no_akta' => 'required|unique:peristiwa_kelahiran,no_akta',
             'tgl_lahir' => 'required|date',
             'tempat_lahir' => 'required',
-            // 'warga_id' => 'required|exists:warga,id',
-            // 'ayah_warga_id' => 'required|exists:warga,id',
-            // 'ibu_warga_id' => 'required|exists:warga,id',
+            'warga_id' => 'required|exists:warga,warga_id',
+            'ayah_warga_id' => 'required|exists:warga,warga_id',
+            'ibu_warga_id' => 'required|exists:warga,warga_id',
             'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+        ], [
+            'warga_id.exists' => 'Data bayi tidak ditemukan',
+            'ayah_warga_id.exists' => 'Data ayah tidak ditemukan',
+            'ibu_warga_id.exists' => 'Data ibu tidak ditemukan',
         ]);
 
         if ($validator->fails()) {
@@ -62,14 +62,20 @@ class PeristiwaKelahiranController extends Controller
 
         try {
             // Simpan data kelahiran
-            $kelahiran = PeristiwaKelahiran::create($request->all());
+            $kelahiran = PeristiwaKelahiran::create([
+                'no_akta' => $request->no_akta,
+                'tgl_lahir' => $request->tgl_lahir,
+                'tempat_lahir' => $request->tempat_lahir,
+                'warga_id' => $request->warga_id,
+                'ayah_warga_id' => $request->ayah_warga_id,
+                'ibu_warga_id' => $request->ibu_warga_id,
+            ]);
 
             // Upload files jika ada
             if ($request->hasFile('files')) {
                 $this->uploadFiles($request->file('files'), 'peristiwa_kelahiran', $kelahiran->kelahiran_id);
             }
 
-            // ✅ Ubah route name
             return redirect()->route('peristiwa-kelahiran.index')
                 ->with('success', 'Data kelahiran berhasil disimpan');
         } catch (\Exception $e) {
@@ -84,8 +90,10 @@ class PeristiwaKelahiranController extends Controller
      */
     public function show($id)
     {
-        $kelahiran = PeristiwaKelahiran::with('media')->findOrFail($id);
-        // ✅ Buat view show atau gunakan index/edit
+        $kelahiran = PeristiwaKelahiran::with(['warga', 'ayah', 'ibu', 'media'])
+            ->findOrFail($id);
+
+        // PERBAIKAN: Sesuaikan dengan folder Kelahiran (huruf K kapital)
         return view('pages.Kelahiran.show', compact('kelahiran'));
     }
 
@@ -94,9 +102,11 @@ class PeristiwaKelahiranController extends Controller
      */
     public function edit($id)
     {
-        $kelahiran = PeristiwaKelahiran::with('media')->findOrFail($id);
-        // ✅ Ubah path view
-        return view('pages.Kelahiran.edit', compact('kelahiran'));
+        $kelahiran = PeristiwaKelahiran::with(['warga', 'ayah', 'ibu', 'media'])->findOrFail($id);
+        $wargas = Warga::all();
+
+        // PERBAIKAN: Sesuaikan dengan folder Kelahiran (huruf K kapital)
+        return view('pages.Kelahiran.edit', compact('kelahiran', 'wargas'));
     }
 
     /**
@@ -110,8 +120,15 @@ class PeristiwaKelahiranController extends Controller
             'no_akta' => 'required|unique:peristiwa_kelahiran,no_akta,' . $id . ',kelahiran_id',
             'tgl_lahir' => 'required|date',
             'tempat_lahir' => 'required',
+            'warga_id' => 'required|exists:warga,warga_id',
+            'ayah_warga_id' => 'required|exists:warga,warga_id',
+            'ibu_warga_id' => 'required|exists:warga,warga_id',
             'files.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
             'delete_files' => 'array',
+        ], [
+            'warga_id.exists' => 'Data bayi tidak ditemukan',
+            'ayah_warga_id.exists' => 'Data ayah tidak ditemukan',
+            'ibu_warga_id.exists' => 'Data ibu tidak ditemukan',
         ]);
 
         if ($validator->fails()) {
@@ -122,7 +139,14 @@ class PeristiwaKelahiranController extends Controller
 
         try {
             // Update data kelahiran
-            $kelahiran->update($request->except(['files', 'delete_files']));
+            $kelahiran->update([
+                'no_akta' => $request->no_akta,
+                'tgl_lahir' => $request->tgl_lahir,
+                'tempat_lahir' => $request->tempat_lahir,
+                'warga_id' => $request->warga_id,
+                'ayah_warga_id' => $request->ayah_warga_id,
+                'ibu_warga_id' => $request->ibu_warga_id,
+            ]);
 
             // Hapus file yang dipilih
             if ($request->has('delete_files')) {
@@ -133,8 +157,6 @@ class PeristiwaKelahiranController extends Controller
             if ($request->hasFile('files')) {
                 $this->uploadFiles($request->file('files'), 'peristiwa_kelahiran', $kelahiran->kelahiran_id);
             }
-
-            // ✅ Ubah route name
             return redirect()->route('peristiwa-kelahiran.index')
                 ->with('success', 'Data kelahiran berhasil diperbarui');
         } catch (\Exception $e) {
@@ -164,7 +186,7 @@ class PeristiwaKelahiranController extends Controller
 
             $kelahiran->delete();
 
-            // ✅ Ubah route name
+            // PERBAIKAN: Pastikan route name benar
             return redirect()->route('peristiwa-kelahiran.index')
                 ->with('success', 'Data kelahiran berhasil dihapus');
         } catch (\Exception $e) {

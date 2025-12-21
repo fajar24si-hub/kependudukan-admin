@@ -221,10 +221,12 @@
                                 <tr>
                                     <th width="5%" class="text-center">#</th>
                                     <th>No. Akta</th>
+                                    <th>Nama Bayi</th>
+                                    <th>Nama Ayah</th>
+                                    <th>Nama Ibu</th>
                                     <th>Tanggal Lahir</th>
                                     <th>Tempat Lahir</th>
-                                    <th width="15%">Dokumen</th>
-                                    <th width="15%">Tanggal Input</th>
+                                    <th width="10%" style="text-align: center;">Dokumen</th>
                                     <th width="15%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -234,10 +236,18 @@
                                         $hasFiles = $kelahiran->media->count() > 0;
                                         $isNew = $kelahiran->created_at->diffInDays(now()) <= 7;
 
-                                        // PERBAIKAN DI SINI: Gunakan Carbon::parse() untuk string
+                                        // PERBAIKAN: Gunakan relasi untuk mendapatkan data warga
+                                        $namaBayi = $kelahiran->warga
+                                            ? $kelahiran->warga->nama
+                                            : 'Data tidak ditemukan';
+                                        $namaAyah = $kelahiran->ayah ? $kelahiran->ayah->nama : 'Data tidak ditemukan';
+                                        $namaIbu = $kelahiran->ibu ? $kelahiran->ibu->nama : 'Data tidak ditemukan';
+
+                                        // Hitung usia
                                         $currentMonth = false;
+                                        $usia = null;
                                         if ($kelahiran->tgl_lahir) {
-                                            $tglLahir = Carbon::parse($kelahiran->tgl_lahir);
+                                            $tglLahir = \Carbon\Carbon::parse($kelahiran->tgl_lahir);
                                             $currentMonth = $tglLahir->month == date('n');
                                             $usia = $tglLahir->age;
                                         }
@@ -274,21 +284,57 @@
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <i class="fas fa-calendar-alt text-muted me-2 fa-xs"></i>
-                                                <span>
-                                                    @if ($kelahiran->tgl_lahir)
-                                                        {{ Carbon::parse($kelahiran->tgl_lahir)->format('d/m/Y') }}
-                                                    @else
-                                                        -
+                                                <i class="fas fa-baby text-primary me-2 fa-xs"></i>
+                                                <div>
+                                                    <div class="fw-bold">{{ $namaBayi }}</div>
+                                                    @if ($kelahiran->warga)
+                                                        <small class="text-muted">NIK:
+                                                            {{ $kelahiran->warga->nik }}</small>
                                                     @endif
-                                                </span>
+                                                </div>
                                             </div>
-                                            @if ($kelahiran->tgl_lahir)
-                                                <small class="text-muted">
-                                                    <i class="fas fa-clock me-1 fa-xs"></i>
-                                                    {{ $usia }} tahun
-                                                </small>
-                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-male text-success me-2 fa-xs"></i>
+                                                <div>
+                                                    <div>{{ $namaAyah }}</div>
+                                                    @if ($kelahiran->ayah)
+                                                        <small class="text-muted">NIK: {{ $kelahiran->ayah->nik }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-female text-danger me-2 fa-xs"></i>
+                                                <div>
+                                                    <div>{{ $namaIbu }}</div>
+                                                    @if ($kelahiran->ibu)
+                                                        <small class="text-muted">NIK: {{ $kelahiran->ibu->nik }}</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-calendar-alt text-muted me-2 fa-xs"></i>
+                                                <div>
+                                                    <div>
+                                                        @if ($kelahiran->tgl_lahir)
+                                                            {{ \Carbon\Carbon::parse($kelahiran->tgl_lahir)->format('d/m/Y') }}
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </div>
+                                                    @if ($kelahiran->tgl_lahir && $usia)
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-clock me-1 fa-xs"></i>
+                                                            {{ $usia }} tahun
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -296,17 +342,16 @@
                                                 <span>{{ $kelahiran->tempat_lahir ?? '-' }}</span>
                                             </div>
                                         </td>
-                                        <td class="text-center">
-                                            @if ($hasFiles)
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <span
-                                                        class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-2"
-                                                        data-bs-toggle="tooltip"
-                                                        title="{{ $kelahiran->media->count() }} dokumen">
+                                        <td style="text-align: center; vertical-align: middle;">
+                                            <div class="d-flex flex-column justify-content-center align-items-center"
+                                                style="height: 100%;">
+                                                @if ($hasFiles)
+                                                    <div
+                                                        class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-2 mb-1">
                                                         <i class="fas fa-file-alt me-1"></i>
                                                         {{ $kelahiran->media->count() }}
-                                                    </span>
-                                                    <small class="text-muted mt-1">
+                                                    </div>
+                                                    <div class="text-muted small">
                                                         @foreach ($kelahiran->media->take(2) as $media)
                                                             {{ strtoupper(pathinfo($media->file_name, PATHINFO_EXTENSION)) }}
                                                             @if (!$loop->last)
@@ -316,21 +361,14 @@
                                                         @if ($kelahiran->media->count() > 2)
                                                             +{{ $kelahiran->media->count() - 2 }}
                                                         @endif
-                                                    </small>
-                                                </div>
-                                            @else
-                                                <span
-                                                    class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary px-3 py-2"
-                                                    data-bs-toggle="tooltip" title="Tidak ada dokumen">
-                                                    <i class="fas fa-file-excel me-1"></i> 0
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-column">
-                                                <small
-                                                    class="text-muted">{{ $kelahiran->created_at->format('d/m/Y') }}</small>
-                                                <small>{{ $kelahiran->created_at->format('H:i') }}</small>
+                                                    </div>
+                                                @else
+                                                    <div
+                                                        class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary px-3 py-2">
+                                                        <i class="fas fa-file-excel me-1"></i> 0
+                                                    </div>
+                                                    <div class="text-muted small mt-1">Tidak ada dokumen</div>
+                                                @endif
                                             </div>
                                         </td>
                                         <td class="text-center">
@@ -362,7 +400,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4">
+                                        <td colspan="9" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-baby fa-3x mb-3" style="opacity: 0.5;"></i>
                                                 <h5>Belum ada data kelahiran</h5>
@@ -378,6 +416,7 @@
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -423,6 +462,23 @@
 
         .card:hover {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table td.text-center {
+            vertical-align: middle !important;
+        }
+
+        .table td.text-center .badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+        }
+
+        .table td.text-center small {
+            display: block !important;
+            text-align: center !important;
+            width: 100% !important;
         }
     </style>
 @endpush

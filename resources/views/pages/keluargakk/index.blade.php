@@ -98,8 +98,8 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <h4 class="mb-0">{{ $data->total() }}</h4>
-                                            <small class="text-muted">Total KK</small>
+                                            <h4 class="mb-0 text-center">{{ $data->total() }}</h4>
+                                            <small class="text-muted d-block text-center">Total KK</small>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="fas fa-home fa-2x text-primary"></i>
@@ -119,8 +119,8 @@
                                                     $totalAnggota += $kk->anggotaKeluarga->count();
                                                 }
                                             @endphp
-                                            <h4 class="mb-0">{{ $totalAnggota }}</h4>
-                                            <small class="text-muted">Total Anggota</small>
+                                            <h4 class="mb-0 text-center">{{ $totalAnggota }}</h4>
+                                            <small class="text-muted d-block text-center">Total Anggota</small>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="fas fa-users fa-2x text-success"></i>
@@ -134,8 +134,8 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <h4 class="mb-0">{{ $data->count() }}</h4>
-                                            <small class="text-muted">Ditampilkan</small>
+                                            <h4 class="mb-0 text-center">{{ $data->count() }}</h4>
+                                            <small class="text-muted d-block text-center">Ditampilkan</small>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="fas fa-eye fa-2x text-info"></i>
@@ -153,8 +153,8 @@
                                                 $avgAnggota =
                                                     $data->total() > 0 ? round($totalAnggota / $data->total(), 1) : 0;
                                             @endphp
-                                            <h4 class="mb-0">{{ $avgAnggota }}</h4>
-                                            <small class="text-muted">Rata-rata Anggota</small>
+                                            <h4 class="mb-0 text-center">{{ $avgAnggota }}</h4>
+                                            <small class="text-muted d-block text-center">Rata-rata Anggota</small>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <i class="fas fa-chart-bar fa-2x text-warning"></i>
@@ -167,13 +167,13 @@
 
                     <!-- Data Table -->
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" style="text-align: center;">
                             <thead>
                                 <tr>
-                                    <th width="5%" class="text-center">#</th>
+                                    <th width="5%">No</th>
                                     <th>
                                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'kk_nomor', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}"
-                                            class="text-decoration-none d-flex align-items-center">
+                                            class="text-decoration-none d-flex align-items-center justify-content-center">
                                             Nomor KK
                                             <i class="fas fa-sort ms-1 small"></i>
                                         </a>
@@ -181,35 +181,35 @@
                                     <th>Kepala Keluarga</th>
                                     <th>
                                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'alamat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}"
-                                            class="text-decoration-none d-flex align-items-center">
+                                            class="text-decoration-none d-flex align-items-center justify-content-center">
                                             Alamat
                                             <i class="fas fa-sort ms-1 small"></i>
                                         </a>
                                     </th>
                                     <th>RT/RW</th>
                                     <th>Jumlah Anggota</th>
-                                    <th width="15%" class="text-center">Aksi</th>
+                                    <th width="15%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($data as $kk)
                                     <tr>
-                                        <td class="text-center">
+                                        <td>
                                             <div
-                                                class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                                class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto">
                                                 <small class="text-primary fw-bold">{{ $loop->iteration }}</small>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             <span class="font-monospace fw-bold">{{ $kk->kk_nomor }}</span>
                                         </td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center justify-content-center">
                                                 <div
                                                     class="avatar-sm bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
                                                     <i class="fas fa-user-tie text-success"></i>
                                                 </div>
-                                                <div>
+                                                <div class="text-start">
                                                     <h6 class="mb-0">
                                                         @if ($kk->kepalaKeluarga)
                                                             {{ $kk->kepalaKeluarga->nama }}
@@ -227,28 +227,26 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             <span>{{ Str::limit($kk->alamat, 50) }}</span>
                                         </td>
-                                        <td>
-                                            <span class="badge bg-primary">RT {{ $kk->rt }}</span>
-                                            <span class="badge bg-secondary ms-1">RW {{ $kk->rw }}</span>
+                                        <td class="align-middle">
+                                            <div class="d-flex justify-content-center gap-1">
+                                                <span class="badge bg-primary">RT {{ $kk->rt }}</span>
+                                                <span class="badge bg-secondary">RW {{ $kk->rw }}</span>
+                                            </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="align-middle">
                                             <h5 class="mb-0">{{ $kk->anggotaKeluarga->count() }}</h5>
                                             <small class="text-muted">anggota</small>
                                         </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
+                                        <td class="align-middle">
+                                            <div class="d-flex gap-2 justify-content-center">
                                                 <a href="{{ route('keluargakk.edit', $kk->kk_id) }}"
                                                     class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
                                                     title="Edit KK">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-info"
-                                                    data-bs-toggle="tooltip" title="Detail Anggota">
-                                                    <i class="fas fa-users"></i>
-                                                </button>
                                                 <form action="{{ route('keluargakk.destroy', $kk->kk_id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Hapus data KK {{ $kk->kk_nomor }}?')">
@@ -300,6 +298,21 @@
 
 @push('styles')
     <style>
+        /* Tabel center alignment */
+        .table {
+            text-align: center !important;
+        }
+
+        .table th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
+        .table td {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+
         .avatar-sm {
             width: 36px;
             height: 36px;
@@ -324,6 +337,11 @@
         .badge {
             padding: 0.35em 0.65em;
             font-weight: 500;
+        }
+
+        /* Center align untuk header sorting */
+        .table th a {
+            justify-content: center;
         }
     </style>
 @endpush

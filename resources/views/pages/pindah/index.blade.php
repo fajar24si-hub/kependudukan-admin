@@ -226,8 +226,8 @@
                                     <th>Alasan</th>
                                     <th width="15%">Alamat Tujuan</th>
                                     <th width="10%">No. Surat</th>
-                                    <th width="10%">Dokumen</th>
-                                    <th width="15%">Aksi</th>
+                                    <th width="15%" style="text-align: center;">Dokumen</th>
+                                    <th width="15%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>

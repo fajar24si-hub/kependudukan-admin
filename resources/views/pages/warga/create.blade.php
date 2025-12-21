@@ -71,7 +71,7 @@
                             @error('tanggal_lahir')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Format: YYYY-MM-DD</small>
+                            <small class="text-muted">Format: MM-DD-YYYY</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Agama <span class="text-danger">*</span></label>

@@ -18,9 +18,6 @@
                             <p class="text-muted mb-0">Kelola data seluruh warga dengan lengkap</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-info">
-                                <i class="fas fa-download me-1"></i> Export
-                            </button>
                             <a href="{{ route('warga.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-1"></i> Tambah Warga
                             </a>
@@ -93,9 +90,13 @@
                                     <label class="form-label">Status</label>
                                     <select class="form-select" name="status_warga">
                                         <option value="">Semua Status</option>
-                                        <option value="Aktif" {{ request('status_warga') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="Meninggal" {{ request('status_warga') == 'Meninggal' ? 'selected' : '' }}>Meninggal</option>
-                                        <option value="Pindah" {{ request('status_warga') == 'Pindah' ? 'selected' : '' }}>Pindah</option>
+                                        <option value="Aktif" {{ request('status_warga') == 'Aktif' ? 'selected' : '' }}>
+                                            Aktif</option>
+                                        <option value="Meninggal"
+                                            {{ request('status_warga') == 'Meninggal' ? 'selected' : '' }}>Meninggal
+                                        </option>
+                                        <option value="Pindah" {{ request('status_warga') == 'Pindah' ? 'selected' : '' }}>
+                                            Pindah</option>
                                     </select>
                                 </div>
 
@@ -134,14 +135,18 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
                                             @php
-                                                $lakiCount = $data->total() > 0
-                                                    ? \App\Models\Warga::when(request('search'), function ($q) {
-                                                        $q->where('nama', 'like', '%'.request('search').'%')
-                                                          ->orWhere('nik', 'like', '%'.request('search').'%');
-                                                    })
-                                                    ->where('jenis_kelamin', 'L')
-                                                    ->count()
-                                                    : 0;
+                                                $lakiCount =
+                                                    $data->total() > 0
+                                                        ? \App\Models\Warga::when(request('search'), function ($q) {
+                                                            $q->where(
+                                                                'nama',
+                                                                'like',
+                                                                '%' . request('search') . '%',
+                                                            )->orWhere('nik', 'like', '%' . request('search') . '%');
+                                                        })
+                                                            ->where('jenis_kelamin', 'L')
+                                                            ->count()
+                                                        : 0;
                                             @endphp
                                             <h4 class="mb-0">{{ $lakiCount }}</h4>
                                             <small class="text-muted">Laki-laki</small>
@@ -159,14 +164,18 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
                                             @php
-                                                $perempuanCount = $data->total() > 0
-                                                    ? \App\Models\Warga::when(request('search'), function ($q) {
-                                                        $q->where('nama', 'like', '%'.request('search').'%')
-                                                          ->orWhere('nik', 'like', '%'.request('search').'%');
-                                                    })
-                                                    ->where('jenis_kelamin', 'P')
-                                                    ->count()
-                                                    : 0;
+                                                $perempuanCount =
+                                                    $data->total() > 0
+                                                        ? \App\Models\Warga::when(request('search'), function ($q) {
+                                                            $q->where(
+                                                                'nama',
+                                                                'like',
+                                                                '%' . request('search') . '%',
+                                                            )->orWhere('nik', 'like', '%' . request('search') . '%');
+                                                        })
+                                                            ->where('jenis_kelamin', 'P')
+                                                            ->count()
+                                                        : 0;
                                             @endphp
                                             <h4 class="mb-0">{{ $perempuanCount }}</h4>
                                             <small class="text-muted">Perempuan</small>
@@ -200,7 +209,7 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th width="5%" class="text-center">#</th>
+                                    <th width="5%" class="text-center">ID</th>
                                     <th>
                                         <a href="{{ request()->fullUrlWithQuery(['sort' => 'nik', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}"
                                             class="text-decoration-none d-flex align-items-center">
@@ -217,7 +226,6 @@
                                     </th>
                                     <th>Jenis Kelamin</th>
                                     <th>Tempat/Tgl Lahir</th>
-                                    <th>Status</th>
                                     <th width="15%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -225,8 +233,10 @@
                                 @forelse($data as $item)
                                     <tr>
                                         <td class="text-center">
-                                            <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
-                                                <small class="text-primary fw-bold">{{ $loop->iteration }}</small>
+                                            <div
+                                                class="avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center">
+                                                <small class="text-primary fw-bold">{{ $item->warga_id }}</small>
+                                                <!-- Diubah dari $loop->iteration -->
                                             </div>
                                         </td>
                                         <td>
@@ -234,8 +244,9 @@
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar-sm bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                                    @if($item->jenis_kelamin == 'L')
+                                                <div
+                                                    class="avatar-sm bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                    @if ($item->jenis_kelamin == 'L')
                                                         <i class="fas fa-male text-success"></i>
                                                     @else
                                                         <i class="fas fa-female text-danger"></i>
@@ -270,7 +281,7 @@
                                                     @php
                                                         $umur = \Carbon\Carbon::parse($item->tanggal_lahir)->age;
                                                     @endphp
-                                                    @if($umur > 0)
+                                                    @if ($umur > 0)
                                                         ({{ $umur }} tahun)
                                                     @else
                                                         (Baru lahir)
@@ -278,39 +289,20 @@
                                                 </small>
                                             </div>
                                         </td>
-                                        <td>
-                                            @if($item->status_warga == 'Aktif')
-                                                <span class="badge bg-success">Aktif</span>
-                                            @elseif($item->status_warga == 'Meninggal')
-                                                <span class="badge bg-danger">Meninggal</span>
-                                            @elseif($item->status_warga == 'Pindah')
-                                                <span class="badge bg-warning">Pindah</span>
-                                            @else
-                                                <span class="badge bg-secondary">{{ $item->status_warga }}</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
+                                        <td class="text-center">
+                                            <div class="d-flex gap-2 justify-content-center">
                                                 <a href="{{ route('warga.edit', $item->warga_id) }}"
-                                                   class="btn btn-sm btn-warning"
-                                                   data-bs-toggle="tooltip"
-                                                   title="Edit Data">
+                                                    class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                    title="Edit Data">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="{{ route('warga.show', $item->warga_id) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   data-bs-toggle="tooltip"
-                                                   title="Detail Warga">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
                                                 <form action="{{ route('warga.destroy', $item->warga_id) }}"
-                                                      method="POST"
-                                                      onsubmit="return confirm('Hapus data warga {{ $item->nama }}?')">
+                                                    method="POST"
+                                                    onsubmit="return confirm('Hapus data warga {{ $item->nama }}?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger"
-                                                            data-bs-toggle="tooltip"
-                                                            title="Hapus Data">
+                                                        data-bs-toggle="tooltip" title="Hapus Data">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -319,7 +311,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4">
+                                        <td colspan="6" class="text-center py-4">
                                             <div class="text-muted">
                                                 <i class="fas fa-user-slash fa-3x mb-3"></i>
                                                 <h5>Belum ada data warga yang tersedia</h5>
@@ -360,8 +352,21 @@
             height: 36px;
         }
 
-        .table > thead {
+        .table>thead {
             background-color: var(--light-color);
+        }
+
+        .table>thead>tr>th {
+            font-weight: 600;
+            color: #495057;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table>tbody>tr>td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-top: 1px solid #e9ecef;
         }
 
         .table-striped tbody tr:nth-of-type(odd) {
@@ -374,11 +379,13 @@
 
         .font-monospace {
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.875rem;
         }
 
         .badge {
             padding: 0.35em 0.65em;
             font-weight: 500;
+            font-size: 0.75rem;
         }
 
         .card-header {
@@ -388,6 +395,22 @@
 
         .card.border {
             border: 1px solid var(--gray-color) !important;
+        }
+
+        /* Spacing untuk tombol aksi */
+        .d-flex.gap-2 {
+            gap: 0.5rem;
+        }
+
+        /* Padding untuk sel tabel */
+        .table td,
+        .table th {
+            padding: 0.75rem 1rem;
+        }
+
+        /* Mengatur lebar kolom agar tetap konsisten */
+        .table th[width] {
+            min-width: 60px;
         }
     </style>
 @endpush
@@ -424,7 +447,8 @@
                     if (submitBtn) {
                         submitBtn.disabled = true;
                         const originalHTML = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memfilter...';
+                        submitBtn.innerHTML =
+                            '<span class="spinner-border spinner-border-sm me-2"></span>Memfilter...';
 
                         setTimeout(() => {
                             submitBtn.disabled = false;

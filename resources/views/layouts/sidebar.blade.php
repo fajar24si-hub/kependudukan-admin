@@ -100,20 +100,12 @@
         </div>
 
         <!-- Administrasi -->
-        <div class="nav-item dropdown">
-            <a href="#"
-                class="nav-link dropdown-toggle {{ request()->is('user*') || request()->is('multipleuploads*') ? 'active' : '' }}"
-                data-bs-toggle="dropdown">
+        <div class="nav-item">
+           <a href="{{ route('user.index') }}"
+                class="nav-link {{ request()->is('identitas-pengembang') ? 'active' : '' }}">
                 <i class="fas fa-cogs"></i>
-                <span>Administrasi</span>
-                <i class="fas fa-chevron-down ms-auto"></i>
+                <span>Manajemen User</span>
             </a>
-            <div class="dropdown-menu">
-                <a href="{{ route('user.index') }}"
-                    class="dropdown-item {{ request()->is('user*') ? 'active' : '' }}">
-                    <i class="fas fa-user-cog me-2"></i> Manajemen User
-                </a>
-            </div>
         </div>
 
         <!-- Identitas Pengembang -->

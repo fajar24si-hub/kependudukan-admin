@@ -15,13 +15,13 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        // Search functionality - TAMBAHKAN ROLE PADA SEARCH
+        // Search functionality
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('role', 'like', "%{$search}%"); // Tambahkan ini
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('role', 'like', "%{$search}%");
             });
         }
 
@@ -93,7 +93,7 @@ class UserController extends Controller
                 'mime_type' => $fotoProfil->getMimeType()
             ]);
 
-            // Store file - PERBAIKAN DI SINI
+            // Store file 
             $path = $fotoProfil->storeAs('foto-profil', $filename, 'public'); // Simpan di storage/app/public
             Log::info('File stored at: ' . $path);
 
@@ -102,7 +102,7 @@ class UserController extends Controller
             Log::info('File exists after storage: ' . ($fileExists ? 'YES' : 'NO'));
 
             // Simpan path RELATIF untuk storage public
-            $userData['foto_profil'] = 'foto-profil/' . $filename; // Simpan path lengkap
+            $userData['foto_profil'] = 'foto-profil/' . $filename;
         } else {
             Log::info('No foto profil uploaded, will use default');
         }
@@ -179,7 +179,7 @@ class UserController extends Controller
                 }
             }
 
-            // Store file baru - PERBAIKAN DI SINI
+            // Store file baru -
             $path = $fotoProfil->storeAs('foto-profil', $filename, 'public');
             Log::info('New file stored at: ' . $path);
 
@@ -214,7 +214,7 @@ class UserController extends Controller
     }
 
     // Hapus user
-     public function destroy($id)
+    public function destroy($id)
     {
         Log::info('Delete user request received', ['user_id' => $id]);
 

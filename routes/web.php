@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
-    // Halaman Signup (Registrasi) - TAMBAHKAN
+    // Halaman Signup (Registrasi) 
     Route::get('/signup', [AuthController::class, 'showSignupForm'])->name('signup');
     Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 

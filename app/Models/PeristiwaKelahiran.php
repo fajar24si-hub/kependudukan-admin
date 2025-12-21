@@ -32,31 +32,22 @@ class PeristiwaKelahiran extends Model
     /**
      * Relasi ke Warga (anak)
      */
-    public function warga(): BelongsTo
+    public function warga()
     {
         return $this->belongsTo(Warga::class, 'warga_id', 'warga_id');
     }
 
-    /**
-     * Relasi ke Warga (ayah)
-     */
-    public function ayah(): BelongsTo
+    public function ayah()
     {
         return $this->belongsTo(Warga::class, 'ayah_warga_id', 'warga_id');
     }
 
-    /**
-     * Relasi ke Warga (ibu)
-     */
-    public function ibu(): BelongsTo
+    public function ibu()
     {
         return $this->belongsTo(Warga::class, 'ibu_warga_id', 'warga_id');
     }
 
-    /**
-     * Relasi ke Media
-     */
-    public function media(): HasMany
+    public function media()
     {
         return $this->hasMany(Media::class, 'ref_id', 'kelahiran_id')
             ->where('ref_table', 'peristiwa_kelahiran');
