@@ -8,13 +8,7 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            <!-- Search -->
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" class="form-control" placeholder="Search...">
-                </div>
-            </div>
+
         </div>
 
         <!-- Right Section -->

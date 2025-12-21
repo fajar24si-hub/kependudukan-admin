@@ -60,7 +60,7 @@ Route::middleware(['checkislogin'])->group(function () {
     // CRUD Data Keluarga KK
     Route::resource('keluargakk', KeluargaKKController::class);
 
-    // ========== MODUL KEPENDUDUKAN - PERISTIWA VITAL ==========
+    // ========== PERISTIWA VITAL ==========
     // Peristiwa Kelahiran
     Route::resource('peristiwa-kelahiran', PeristiwaKelahiranController::class);
     Route::post('peristiwa-kelahiran/{id}/upload-files', [\App\Http\Controllers\PeristiwaKelahiranController::class, 'uploadFiles'])->name('peristiwa-kelahiran.upload-files');
